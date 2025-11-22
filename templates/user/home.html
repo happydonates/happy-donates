@@ -517,143 +517,85 @@
     </section>
 
     <!-- BROWSE SECTION -->
-    <section id="browse" class="py-16 md:py-24 bg-gray-50">
+<section id="browse" class="py-16 md:py-24 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Header & Filters -->
             <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
                 <div class="text-center md:text-left w-full md:w-auto">
                     <span class="text-brand-600 font-bold tracking-wider uppercase text-sm">New Arrivals</span>
                     <h2 class="font-serif text-3xl md:text-4xl font-bold text-gray-900 mt-2">Discover Treasures</h2>
                 </div>
+                
                 <div class="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto no-scrollbar px-1">
-                    <button
-                        class="px-5 py-2 rounded-full bg-brand-900 text-white text-sm font-medium whitespace-nowrap shadow-md hover:bg-brand-800 transition">All
-                        Items</button>
-                    <button
-                        class="px-5 py-2 rounded-full bg-white text-gray-600 hover:bg-brand-50 border border-gray-200 text-sm font-medium whitespace-nowrap transition">Furniture</button>
-                    <button
-                        class="px-5 py-2 rounded-full bg-white text-gray-600 hover:bg-brand-50 border border-gray-200 text-sm font-medium whitespace-nowrap transition">Clothes</button>
-                    <button
-                        class="px-5 py-2 rounded-full bg-white text-gray-600 hover:bg-brand-50 border border-gray-200 text-sm font-medium whitespace-nowrap transition">Electronics</button>
+                    <a href="?#browse"
+                        class="px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition border
+                        {% if not active_category_id %}
+                            bg-brand-900 text-white shadow-md border-transparent
+                        {% else %}
+                            bg-white text-gray-600 hover:bg-brand-50 border-gray-200
+                        {% endif %}">
+                        All Items
+                    </a>
+
+                    {% for cat in categories %}
+                    <a href="?category={{ cat.main_category_id }}#browse"
+                        class="px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition border
+                        {% if active_category_id == cat.main_category_id %}
+                            bg-brand-900 text-white shadow-md border-transparent
+                        {% else %}
+                            bg-white text-gray-600 hover:bg-brand-50 border-gray-200
+                        {% endif %}">
+                        {{ cat.main_category_name }}
+                    </a>
+                    {% endfor %}
                 </div>
             </div>
 
-            <!-- Grid -->
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
 
-                <!-- Card 1 -->
-                <div
-                    class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
+                {% for post in latest_posts %}
+                <div class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
                     <div class="relative h-52 md:h-60 rounded-xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1567016432779-094069958ea5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Sofa" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
-                        <div
-                            class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">
-                            Furniture
-                        </div>
-                    </div>
-                    <div class="pt-4 px-2 pb-2">
-                        <h3 class="font-bold text-lg text-gray-900 truncate">Modern Grey Sofa</h3>
-                        <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
-                            <i class="fa-solid fa-location-dot text-brand-400"></i> Brooklyn, NY
-                        </p>
-                        <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
-                            <div class="flex items-center gap-2">
-                                <div
-                                    class="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-900">
-                                    JS</div>
-                                <span class="text-xs text-gray-500">John S.</span>
-                            </div>
-                            <span class="text-xs text-gray-400">2h ago</span>
-                        </div>
-                    </div>
-                </div>
+                        {% if post.images %}
+                            <img src="{{ post.images.url }}" alt="{{ post.title }}" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=800&q=80" 
+                                 alt="No Image" class="w-full h-full object-cover group-hover:scale-110 transition duration-700 grayscale opacity-50">
+                        {% endif %}
 
-                <!-- Card 2 -->
-                <div
-                    class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
-                    <div class="relative h-52 md:h-60 rounded-xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Books"
-                            class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
-                        <div
-                            class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">
-                            Education
+                        <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">
+                            {{ post.sub_category.main_category_id.main_category_name|default:"Item" }}
                         </div>
                     </div>
-                    <div class="pt-4 px-2 pb-2">
-                        <h3 class="font-bold text-lg text-gray-900 truncate">Box of Kids Books</h3>
-                        <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
-                            <i class="fa-solid fa-location-dot text-brand-400"></i> Queens, NY
-                        </p>
-                        <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
-                            <div class="flex items-center gap-2">
-                                <div
-                                    class="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-900">
-                                    AM</div>
-                                <span class="text-xs text-gray-500">Anna M.</span>
-                            </div>
-                            <span class="text-xs text-gray-400">5h ago</span>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Card 3 -->
-                <div
-                    class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
-                    <div class="relative h-52 md:h-60 rounded-xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1556906781-9a412961d289?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Sneakers"
-                            class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
-                        <div
-                            class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">
-                            Clothing
-                        </div>
-                    </div>
                     <div class="pt-4 px-2 pb-2">
-                        <h3 class="font-bold text-lg text-gray-900 truncate">White Sneakers (Size 9)</h3>
+                        <h3 class="font-bold text-lg text-gray-900 truncate">{{ post.title }}</h3>
+                        
                         <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
-                            <i class="fa-solid fa-location-dot text-brand-400"></i> Jersey City, NJ
+                            <i class="fa-solid fa-location-dot text-brand-400"></i> 
+                            {{ post.location.district_name|default:"Unknown Location" }}
                         </p>
-                        <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
-                            <div class="flex items-center gap-2">
-                                <div
-                                    class="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-900">
-                                    MK</div>
-                                <span class="text-xs text-gray-500">Mike K.</span>
-                            </div>
-                            <span class="text-xs text-gray-400">1d ago</span>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Card 4 -->
-                <div
-                    class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
-                    <div class="relative h-52 md:h-60 rounded-xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1519183071298-a2962feb80f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Bike" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
-                        <div
-                            class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">
-                            Sport
-                        </div>
-                    </div>
-                    <div class="pt-4 px-2 pb-2">
-                        <h3 class="font-bold text-lg text-gray-900 truncate">Kids Bicycle (Blue)</h3>
-                        <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
-                            <i class="fa-solid fa-location-dot text-brand-400"></i> Hoboken, NJ
-                        </p>
                         <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
                             <div class="flex items-center gap-2">
-                                <div
-                                    class="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-900">
-                                    EL</div>
-                                <span class="text-xs text-gray-500">Elena L.</span>
+                                <div class="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-900 uppercase">
+                                    {{ post.user.username|make_list|first }}
+                                </div>
+                                <span class="text-xs text-gray-500 truncate max-w-[80px]">{{ post.user.username }}</span>
                             </div>
-                            <span class="text-xs text-gray-400">2d ago</span>
+                            <span class="text-xs text-gray-400">{{ post.create_at|timesince }} ago</span>
                         </div>
                     </div>
                 </div>
+                {% empty %}
+                <div class="col-span-full py-12 text-center">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4 text-gray-400">
+                        <i class="fa-solid fa-box-open text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900">No items found</h3>
+                    <p class="text-gray-500">Be the first to donate in this category!</p>
+                </div>
+                {% endfor %}
 
             </div>
 

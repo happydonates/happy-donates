@@ -6,9 +6,24 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-
+from UserApp.models import UserPostModel
+from AdminApp.models import MainCategoryModel
 def home(request):
-    return render(request, 'user/home.html')
+    categories = MainCategoryModel.objects.all()
+    category_id = request.GET.get('category')
+    posts = UserPostModel.objects.filter(status='Active').select_related('location', 'sub_category', 'user').order_by('-create_at')
+
+    if category_id:
+        posts = posts.filter(sub_category__main_category_id=category_id)
+
+    latest_posts = posts[:8]
+
+    context = {
+        'categories': categories,
+        'latest_posts': latest_posts,
+        'active_category_id': int(category_id) if category_id else None
+    }
+    return render(request, 'user/home.html', context)
 
 def register_view(request):
     if request.user.is_authenticated:

@@ -116,7 +116,7 @@ class UserProfileModel(models.Model):
         db_table (str): The name of the database table for the model.
     """
     user_profile_id = models.AutoField(primary_key=True)
-    profile_image = models.ImageField(null=True)
+    profile_image = models.ImageField(upload_to='profile', null=True)
     phone = models.CharField(max_length=200, null=True,blank=True)
     full_name = models.CharField(max_length=200,null=True,blank=True)   
     state = models.ForeignKey(StateModel, on_delete=models.SET_NULL, null=True, blank=True)
