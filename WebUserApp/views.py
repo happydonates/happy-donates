@@ -8,6 +8,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from UserApp.models import UserPostModel
 from AdminApp.models import MainCategoryModel
+from django.core.paginator import Paginator
+from django.db.models import Q
+
 def home(request):
     categories = MainCategoryModel.objects.all()
     category_id = request.GET.get('category')
@@ -131,3 +134,44 @@ def user_profile(request):
         user_profile = None
 
     return render(request, 'user/profile.html', {'user_profile': user_profile})
+
+
+def browse_items(request):
+ 
+    posts = UserPostModel.objects.filter(status='Active').select_related('location', 'sub_category__main_category_id', 'user').order_by('-create_at')
+
+ 
+    search_query = request.GET.get('q')
+    if search_query:
+        posts = posts.filter(
+            Q(title__icontains=search_query) | 
+            Q(location__district_name__icontains=search_query)
+        )
+
+    selected_categories = request.GET.getlist('categories')
+    if selected_categories:
+        posts = posts.filter(sub_category__main_category_id__in=selected_categories)
+       
+        selected_categories = [int(x) for x in selected_categories]
+
+    sort_by = request.GET.get('sort', 'newest')
+    if sort_by == 'oldest':
+        posts = posts.order_by('create_at')
+    else:
+        posts = posts.order_by('-create_at')
+
+    paginator = Paginator(posts, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
+    categories = MainCategoryModel.objects.all()
+
+    context = {
+        'page_obj': page_obj,
+        'categories': categories,
+        'selected_categories': selected_categories,
+        'search_query': search_query,
+        'current_sort': sort_by,
+    }
+    return render(request, 'user/browse_items.html', context)
