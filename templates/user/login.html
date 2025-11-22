@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +11,10 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
@@ -59,17 +62,27 @@
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
-<body class="font-sans text-gray-600 antialiased bg-slate-50 selection:bg-brand-100 selection:text-brand-900 flex flex-col min-h-screen">
+
+<body
+    class="font-sans text-gray-600 antialiased bg-slate-50 selection:bg-brand-100 selection:text-brand-900 flex flex-col min-h-screen">
 
     <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <a href="index.html" class="flex items-center gap-2 group">
-                    <div class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-900 text-xl group-hover:bg-brand-900 group-hover:text-white transition duration-300">
+                    <div
+                        class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-900 text-xl group-hover:bg-brand-900 group-hover:text-white transition duration-300">
                         <i class="fa-solid fa-hand-holding-heart"></i>
                     </div>
                     <div class="flex flex-col">
@@ -78,34 +91,50 @@
                     </div>
                 </a>
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="{% url 'user_home' %}" class="text-gray-800 hover:text-brand-900 font-medium transition">Home</a>
-                    <a href="index.html#how-it-works" class="text-gray-600 hover:text-brand-900 font-medium transition">How it Works</a>
-                    <a href="index.html#download-app" class="text-brand-600 hover:text-brand-800 font-medium transition flex items-center gap-1"><i class="fa-brands fa-android"></i> Get App</a>
-                    <a href="index.html#browse" class="text-gray-600 hover:text-brand-900 font-medium transition">Browse</a>
+                    <a href="{% url 'user_home' %}"
+                        class="text-gray-800 hover:text-brand-900 font-medium transition">Home</a>
+                    <a href="index.html#how-it-works"
+                        class="text-gray-600 hover:text-brand-900 font-medium transition">How it Works</a>
+                    <a href="index.html#download-app"
+                        class="text-brand-600 hover:text-brand-800 font-medium transition flex items-center gap-1"><i
+                            class="fa-brands fa-android"></i> Get App</a>
+                    <a href="index.html#browse"
+                        class="text-gray-600 hover:text-brand-900 font-medium transition">Browse</a>
                     <div class="h-6 w-px bg-gray-200 mx-2"></div>
                     <a href="{% url 'login_user' %}" class="text-brand-900 font-bold transition">Login</a>
-                    <a href="#" class="bg-brand-900 text-white px-6 py-2.5 rounded-full font-medium hover:bg-brand-800 transition shadow-lg shadow-brand-900/20 transform hover:-translate-y-0.5 flex items-center gap-2">
+                    <a href="#"
+                        class="bg-brand-900 text-white px-6 py-2.5 rounded-full font-medium hover:bg-brand-800 transition shadow-lg shadow-brand-900/20 transform hover:-translate-y-0.5 flex items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Donate Now
                     </a>
                 </div>
-                <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-brand-900 focus:outline-none p-2">
+                <button id="mobile-menu-btn"
+                    class="md:hidden text-gray-600 hover:text-brand-900 focus:outline-none p-2">
                     <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
             </div>
         </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full shadow-xl max-h-[90vh] overflow-y-auto">
+        <div id="mobile-menu"
+            class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full shadow-xl max-h-[90vh] overflow-y-auto">
             <div class="px-4 pt-2 pb-6 space-y-1">
-                <a href="{% url 'user_home' %}" class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">Home</a>
-                <a href="index.html#how-it-works" class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">How it Works</a>
-                <a href="index.html#browse" class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">Browse Items</a>
-                <a href="{% url 'login_user' %}" class="block px-3 py-3 rounded-lg text-base font-bold text-brand-900 bg-brand-50">Login</a>
-                <a href="#" class="block text-center mt-4 bg-brand-900 text-white px-4 py-3 rounded-lg font-bold shadow-md">Donate Item</a>
+                <a href="{% url 'user_home' %}"
+                    class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">Home</a>
+                <a href="index.html#how-it-works"
+                    class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">How it
+                    Works</a>
+                <a href="index.html#browse"
+                    class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">Browse
+                    Items</a>
+                <a href="{% url 'login_user' %}"
+                    class="block px-3 py-3 rounded-lg text-base font-bold text-brand-900 bg-brand-50">Login</a>
+                <a href="#"
+                    class="block text-center mt-4 bg-brand-900 text-white px-4 py-3 rounded-lg font-bold shadow-md">Donate
+                    Item</a>
             </div>
         </div>
     </nav>
 
     <section class="relative w-full flex-grow flex items-center justify-center pt-28 pb-12 px-4 overflow-hidden">
-        
+
         <div class="absolute top-0 right-0 -z-10 translate-x-1/4 -translate-y-1/4 opacity-60">
             <div class="w-[500px] h-[500px] bg-brand-100 rounded-full blur-3xl"></div>
         </div>
@@ -114,9 +143,10 @@
         </div>
 
         <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">
-            
+
             <div class="hidden lg:block space-y-6">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-100 shadow-sm animate-float">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-100 shadow-sm animate-float">
                     <span class="w-2 h-2 rounded-full bg-brand-600 animate-pulse"></span>
                     <span class="text-sm font-medium text-brand-900">Welcome back neighbor!</span>
                 </div>
@@ -124,19 +154,25 @@
                     Let's Continue <br>
                     <span class="text-brand-900 relative">
                         Spreading Joy
-                        <svg class="absolute w-full h-3 -bottom-1 left-0 text-brand-300 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
+                        <svg class="absolute w-full h-3 -bottom-1 left-0 text-brand-300 -z-10" viewBox="0 0 100 10"
+                            preserveAspectRatio="none">
                             <path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="4" fill="none" />
                         </svg>
                     </span>
                 </h1>
                 <p class="text-lg text-gray-600 leading-relaxed max-w-lg">
-                    Log in to check your messages, manage your donations, or find that perfect item you've been looking for.
+                    Log in to check your messages, manage your donations, or find that perfect item you've been looking
+                    for.
                 </p>
             </div>
 
             <div class="w-full max-w-sm mx-auto lg:ml-auto">
-                <form id="login-form" class="bg-white p-6 rounded-2xl shadow-xl shadow-brand-900/10 border border-white relative overflow-hidden">
-                    
+                <form method="POST" action=""
+                    class="bg-white p-6 rounded-2xl shadow-xl shadow-brand-900/10 border border-white relative overflow-hidden">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="next" value="{{ request.GET.next }}">
+
                     <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-300 to-brand-600"></div>
 
                     <div class="text-center mb-6">
@@ -144,55 +180,85 @@
                         <p class="text-xs text-gray-500 mt-1">Please enter your details.</p>
                     </div>
 
+                    {% if messages %}
+                    <div class="mb-4 space-y-2">
+                        {% for message in messages %}
+                        <div
+                            class="p-3 text-xs rounded-lg border {% if message.tags == 'error' %}bg-red-50 text-red-600 border-red-100{% else %}bg-green-50 text-green-600 border-green-100{% endif %}">
+                            <i class="fa-solid fa-circle-info mr-1"></i> {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
                     <div class="space-y-4">
                         <div class="relative group">
-                            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs group-focus-within:text-brand-600 transition-colors"></i>
-                            <input type="email" placeholder="Email Address" required class="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-100 focus:border-brand-500 outline-none transition-all">
+                            <i
+                                class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs group-focus-within:text-brand-600 transition-colors"></i>
+                            <input type="email" name="email" placeholder="Email Address" required
+                                class="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-100 focus:border-brand-500 outline-none transition-all">
                         </div>
 
                         <div>
                             <div class="relative group">
-                                <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs group-focus-within:text-brand-600 transition-colors"></i>
-                                <input type="password" placeholder="Password" required class="w-full pl-9 pr-9 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-100 focus:border-brand-500 outline-none transition-all">
-                                <i class="fa-solid fa-eye absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-brand-600 toggle-password text-xs transition-colors"></i>
+                                <i
+                                    class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs group-focus-within:text-brand-600 transition-colors"></i>
+                                <input type="password" name="password" id="password-input" placeholder="Password"
+                                    required
+                                    class="w-full pl-9 pr-9 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-100 focus:border-brand-500 outline-none transition-all">
+                                <i
+                                    class="fa-solid fa-eye absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-brand-600 toggle-password text-xs transition-colors"></i>
                             </div>
                         </div>
 
                         <div class="flex items-center justify-between text-xs">
                             <div class="flex items-center gap-2">
-                                <input id="remember" type="checkbox" class="w-3.5 h-3.5 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer">
-                                <label for="remember" class="text-gray-600 cursor-pointer select-none">Remember me</label>
+                                <input id="remember" type="checkbox"
+                                    class="w-3.5 h-3.5 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer">
+                                <label for="remember" class="text-gray-600 cursor-pointer select-none">Remember
+                                    me</label>
                             </div>
                             <a href="#" class="text-brand-600 font-semibold hover:underline">Forgot Password?</a>
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-brand-900 hover:bg-brand-800 text-white py-2.5 rounded-lg font-semibold shadow-lg shadow-brand-900/20 transition transform hover:-translate-y-0.5 active:translate-y-0 text-sm mt-6">
+                    <button type="submit"
+                        class="w-full bg-brand-900 hover:bg-brand-800 text-white py-2.5 rounded-lg font-semibold shadow-lg shadow-brand-900/20 transition transform hover:-translate-y-0.5 active:translate-y-0 text-sm mt-6">
                         Sign In
                     </button>
 
                     <div class="relative py-5">
-                        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-100"></div></div>
-                        <div class="relative flex justify-center"><span class="px-2 bg-white text-[10px] text-gray-400 font-medium uppercase tracking-wider">Or login with</span></div>
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-100"></div>
+                        </div>
+                        <div class="relative flex justify-center"><span
+                                class="px-2 bg-white text-[10px] text-gray-400 font-medium uppercase tracking-wider">Or
+                                login with</span></div>
                     </div>
 
                     <div class="grid grid-cols-3 gap-2">
-                        <button type="button" class="flex items-center justify-center py-2 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition text-blue-600">
+                        <button type="button"
+                            class="flex items-center justify-center py-2 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition text-blue-600">
                             <i class="fa-brands fa-facebook-f text-sm"></i>
                         </button>
-                        <button type="button" class="flex items-center justify-center py-2 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition text-red-500">
+                        <button type="button"
+                            class="flex items-center justify-center py-2 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition text-red-500">
                             <i class="fa-brands fa-google text-sm"></i>
                         </button>
-                        <button type="button" class="flex items-center justify-center py-2 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition text-gray-900">
+                        <button type="button"
+                            class="flex items-center justify-center py-2 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition text-gray-900">
                             <i class="fa-brands fa-apple text-sm"></i>
                         </button>
                     </div>
 
                     <div class="text-center mt-5">
-                        <p class="text-xs text-gray-600">Don't have an account? <a href="{% url 'user_register' %}" class="font-bold text-brand-900 hover:underline">Create Account</a></p>
+                        <p class="text-xs text-gray-600">Don't have an account? <a href="{% url 'user_register' %}"
+                                class="font-bold text-brand-900 hover:underline">Create Account</a></p>
                     </div>
                 </form>
             </div>
+
+
         </div>
     </section>
 
@@ -207,7 +273,8 @@
                     <p class="text-sm text-gray-500 leading-relaxed mb-4">
                         Spreading happiness one donation at a time. Join our community of givers today.
                     </p>
-                    <a href="https://play.google.com/store/apps/details?id=com.happy.happydonates" class="inline-flex items-center gap-2 text-xs font-bold text-brand-900 bg-white border border-gray-200 px-3 py-2 rounded-lg hover:shadow-md transition">
+                    <a href="https://play.google.com/store/apps/details?id=com.happy.happydonates"
+                        class="inline-flex items-center gap-2 text-xs font-bold text-brand-900 bg-white border border-gray-200 px-3 py-2 rounded-lg hover:shadow-md transition">
                         <i class="fa-brands fa-google-play text-xl"></i>
                         <span>GET IT ON<br><span class="text-sm">Google Play</span></span>
                     </a>
@@ -216,7 +283,8 @@
                     <h4 class="font-bold text-gray-900 mb-4">Platform</h4>
                     <ul class="space-y-2 text-sm text-gray-500">
                         <li><a href="index.html#browse" class="hover:text-brand-900 transition">Browse Items</a></li>
-                        <li><a href="index.html#how-it-works" class="hover:text-brand-900 transition">How it Works</a></li>
+                        <li><a href="index.html#how-it-works" class="hover:text-brand-900 transition">How it Works</a>
+                        </li>
                         <li><a href="#" class="hover:text-brand-900 transition">Safety Tips</a></li>
                     </ul>
                 </div>
@@ -231,9 +299,15 @@
                 <div>
                     <h4 class="font-bold text-gray-900 mb-4">Stay Connected</h4>
                     <div class="flex gap-4">
-                        <a href="#" class="w-10 h-10 rounded-full bg-white shadow-sm text-brand-900 flex items-center justify-center hover:bg-brand-900 hover:text-white transition"><i class="fa-brands fa-facebook-f"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-white shadow-sm text-brand-900 flex items-center justify-center hover:bg-brand-900 hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-white shadow-sm text-brand-900 flex items-center justify-center hover:bg-brand-900 hover:text-white transition"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-white shadow-sm text-brand-900 flex items-center justify-center hover:bg-brand-900 hover:text-white transition"><i
+                                class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-white shadow-sm text-brand-900 flex items-center justify-center hover:bg-brand-900 hover:text-white transition"><i
+                                class="fa-brands fa-instagram"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-white shadow-sm text-brand-900 flex items-center justify-center hover:bg-brand-900 hover:text-white transition"><i
+                                class="fa-brands fa-twitter"></i></a>
                     </div>
                 </div>
             </div>
@@ -261,8 +335,8 @@
 
         // Password Toggle Logic
         const toggleBtn = document.querySelector('.toggle-password');
-        if(toggleBtn) {
-            toggleBtn.addEventListener('click', function() {
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function () {
                 const input = this.previousElementSibling;
                 if (input.type === 'password') {
                     input.type = 'text';
@@ -282,4 +356,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -2,13 +2,17 @@ from django.shortcuts import render,redirect
 from UserApp.models import UserProfileModel
 from AdminApp.models import StateModel
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-# Create your views here.
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     return render(request, 'user/home.html')
 
 def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('user_home')
     if request.method == "POST":
         full_name = request.POST.get('full_name', '').strip()
         username = request.POST.get('username', '').strip()
@@ -71,5 +75,44 @@ def register_view(request):
     return render(request, 'user/registration.html', {'states': states})
 
 
-def login(request):
-    return render(request, 'user/login.html')
+def login_user(request):
+    if request.user.is_authenticated:
+        return redirect('user_home')
+    if request.method == "POST":
+        email = request.POST.get("email").lower()
+        password = request.POST.get("password")
+        next_url = request.POST.get("next") or "/"
+
+        try:
+            user_obj = User.objects.get(email=email)
+            username = user_obj.username
+        except User.DoesNotExist:
+            messages.error(request, "Invalid email or password.")
+            return redirect("login_user")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is None:
+            messages.error(request, "Invalid email or password.")
+            return redirect("login_user")
+
+        login(request, user)
+        if(user.is_superuser):
+            return redirect('/admin_home/')
+        return redirect(next_url)
+
+    return render(request, "user/login.html")
+@login_required(login_url='login_user')
+def logout_user(request):
+    logout(request)
+    return redirect('login_user')
+
+@login_required(login_url='login_user')
+def user_profile(request):
+    user_profile = None
+    try:
+        user_profile = UserProfileModel.objects.get(user=request.user)
+    except UserProfileModel.DoesNotExist:
+        user_profile = None
+
+    return render(request, 'user/profile.html', {'user_profile': user_profile})
