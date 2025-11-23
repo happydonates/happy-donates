@@ -7,10 +7,10 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from UserApp.models import UserPostModel
-from AdminApp.models import MainCategoryModel
+from AdminApp.models import MainCategoryModel, StateModel, DistrictsModel
 from django.core.paginator import Paginator
 from django.db.models import Q
-
+from django.shortcuts import render, get_object_or_404
 def home(request):
     categories = MainCategoryModel.objects.all()
     category_id = request.GET.get('category')
@@ -136,42 +136,112 @@ def user_profile(request):
     return render(request, 'user/profile.html', {'user_profile': user_profile})
 
 
+
+
+
 def browse_items(request):
- 
+    
     posts = UserPostModel.objects.filter(status='Active').select_related('location', 'sub_category__main_category_id', 'user').order_by('-create_at')
 
- 
-    search_query = request.GET.get('q')
-    if search_query:
-        posts = posts.filter(
-            Q(title__icontains=search_query) | 
-            Q(location__district_name__icontains=search_query)
-        )
 
+    search_query = request.GET.get('q', '')
     selected_categories = request.GET.getlist('categories')
+    selected_state = request.GET.get('state')
+    selected_district = request.GET.get('district')
+    sort_by = request.GET.get('sort', 'newest')
+
+    is_htmx = request.headers.get('HX-Request') == 'true'
+
+    if search_query:
+        posts = posts.filter(Q(title__icontains=search_query) | Q(location__district_name__icontains=search_query))
+
     if selected_categories:
         posts = posts.filter(sub_category__main_category_id__in=selected_categories)
-       
         selected_categories = [int(x) for x in selected_categories]
 
-    sort_by = request.GET.get('sort', 'newest')
+
+    districts = DistrictsModel.objects.none() 
+
+    if selected_state and selected_state.isdigit():
+        posts = posts.filter(location__state_id=selected_state)
+        districts = DistrictsModel.objects.filter(state_id=selected_state) 
+
+    if selected_district and selected_district.isdigit():
+        posts = posts.filter(location_id=selected_district)
+
+
     if sort_by == 'oldest':
         posts = posts.order_by('create_at')
     else:
         posts = posts.order_by('-create_at')
 
+ 
     paginator = Paginator(posts, 6)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-
-    categories = MainCategoryModel.objects.all()
-
     context = {
         'page_obj': page_obj,
-        'categories': categories,
+        'categories': MainCategoryModel.objects.all(),
+        'states': StateModel.objects.all(),
+        'districts': districts,
         'selected_categories': selected_categories,
+        'selected_state': int(selected_state) if selected_state and selected_state.isdigit() else '',
+        'selected_district': int(selected_district) if selected_district and selected_district.isdigit() else '',
         'search_query': search_query,
         'current_sort': sort_by,
+        'is_htmx': is_htmx, 
     }
+
+
+    if is_htmx:
+        return render(request, 'partials/post_list.html', context)
+
+
     return render(request, 'user/browse_items.html', context)
+
+
+
+
+def single_item_view(request, slug):
+    post = get_object_or_404(UserPostModel, slug=slug)
+
+    similar_items = list(UserPostModel.objects.filter(
+        sub_category=post.sub_category,
+        location=post.location,
+        status='Active'
+    ).exclude(slug=slug).order_by('-create_at')[:4])
+
+   
+    if len(similar_items) < 4:
+        needed = 4 - len(similar_items)
+        
+        # Get IDs we already have to avoid duplicates
+        current_ids = [item.post_id for item in similar_items]
+        current_ids.append(post.post_id) 
+
+        more_items = list(UserPostModel.objects.filter(
+            sub_category=post.sub_category,
+            status='Active'
+        ).exclude(post_id__in=current_ids).order_by('-create_at')[:needed])
+
+        similar_items.extend(more_items)
+
+    if len(similar_items) < 4:
+        needed = 4 - len(similar_items)
+        
+     
+        current_ids = [item.post_id for item in similar_items]
+        current_ids.append(post.post_id)
+
+        filler_items = list(UserPostModel.objects.filter(
+            status='Active'
+        ).exclude(post_id__in=current_ids).order_by('-create_at')[:needed])
+
+        similar_items.extend(filler_items)
+
+    context = {
+        'post': post,
+        'similar_items': similar_items,
+    }
+    return render(request, 'user/single_item.html', context)

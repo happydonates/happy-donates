@@ -4,7 +4,8 @@ from AdminApp.models import SubCategoryModel, DonationCategoryModel, DistrictsMo
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
-
+from django.utils.text import slugify
+import uuid
 
 class UserPostModel(models.Model):
     """
@@ -46,9 +47,17 @@ class UserPostModel(models.Model):
 
     create_at = models.DateTimeField(auto_now_add=True, null=True)
     status = models.CharField(max_length=100, default="Active")
+    slug = models.SlugField(max_length=255, null=True, blank=True, unique=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(self.title) if self.title else "post"
+            self.slug = f"{base}-{uuid.uuid4().hex[:8]}"
+        super().save(*args, **kwargs)
 
     class Meta:
         db_table = 'user_post_table'
+    
 
 
 @receiver(post_save, sender=UserPostModel)
@@ -97,6 +106,12 @@ class UserDonationModel(models.Model):
     comments = models.TextField(max_length=500, null=True)
     create_at = models.DateTimeField(auto_now_add=True, null=True)
     status = models.CharField(max_length=100, default="Pending")
+    slug = models.SlugField(max_length=255, null=True, blank=True, unique=True)
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(self.title) if self.title else "donation"
+            self.slug = f"{base}-{uuid.uuid4().hex[:8]}"
+        super().save(*args, **kwargs)
 
     class Meta:
         db_table = 'user_donation_table'

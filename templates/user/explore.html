@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Items | Happy Donates</title>
+    <meta name="description" content="Find free items in your neighborhood.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fdf2f8', 100: '#fce7f3', 200: '#fbcfe8', 300: '#f9a8d4',
+                            400: '#f472b6', 500: '#ec4899', 600: '#db2777', 700: '#be185d',
+                            800: '#9d174d', 900: '#8B1E4C', 950: '#500724',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .custom-checkbox:checked {
+            background-color: #8B1E4C;
+            border-color: #8B1E4C;
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-600 antialiased bg-slate-50 selection:bg-brand-100 selection:text-brand-900 flex flex-col min-h-screen">
+
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                
+                <a href="index.html" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-900 text-xl group-hover:bg-brand-900 group-hover:text-white transition duration-300">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-serif font-bold text-2xl text-brand-900 leading-none">Happy</span>
+                        <span class="text-xs font-semibold tracking-widest text-brand-600 uppercase">Donates</span>
+                    </div>
+                </a>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-800 hover:text-brand-900 font-medium transition">Home</a>
+                    <a href="index.html#how-it-works" class="text-gray-600 hover:text-brand-900 font-medium transition">How it Works</a>
+                    <a href="index.html#download-app" class="text-brand-600 hover:text-brand-800 font-medium transition flex items-center gap-1"><i class="fa-brands fa-android"></i> Get App</a>
+                    <a href="#" class="text-brand-900 font-bold transition">Browse</a>
+                    
+                    <div class="h-6 w-px bg-gray-200 mx-2"></div>
+                    
+                    <a href="login.html" class="text-gray-900 font-medium hover:text-brand-600 transition">Login</a>
+                    <a href="#" class="bg-brand-900 text-white px-6 py-2.5 rounded-full font-medium hover:bg-brand-800 transition shadow-lg shadow-brand-900/20 transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Donate Now
+                    </a>
+                </div>
+
+                <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-brand-900 focus:outline-none p-2">
+                    <i class="fa-solid fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full shadow-xl max-h-[90vh] overflow-y-auto">
+            <div class="px-4 pt-2 pb-6 space-y-1">
+                <a href="index.html" class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">Home</a>
+                <a href="index.html#how-it-works" class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">How it Works</a>
+                <a href="#" class="block px-3 py-3 rounded-lg text-base font-bold text-brand-900 bg-brand-50">Browse Items</a>
+                <a href="login.html" class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">Login</a>
+                <a href="#" class="block text-center mt-4 bg-brand-900 text-white px-4 py-3 rounded-lg font-bold shadow-md">Donate Item</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-28 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-grow">
+        
+        <div class="flex flex-col lg:flex-row justify-between items-end mb-8 gap-6">
+            <div class="w-full lg:w-auto">
+                <span class="text-brand-600 font-bold tracking-wider uppercase text-xs">Community Giving</span>
+                <h1 class="font-serif text-3xl md:text-4xl font-bold text-gray-900 mt-2">Browse Donations</h1>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                <div class="relative flex-grow sm:w-72 group">
+                    <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-600 transition"></i>
+                    <input type="text" placeholder="Search items..." class="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-100 focus:border-brand-500 outline-none shadow-sm transition text-sm">
+                </div>
+                <button id="mobile-filter-btn" class="lg:hidden bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 hover:bg-gray-50 font-medium text-sm">
+                    <i class="fa-solid fa-sliders"></i> Filters
+                </button>
+            </div>
+        </div>
+
+        <div class="flex gap-8 relative">
+            
+            <aside class="hidden lg:block w-64 flex-shrink-0">
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 sticky top-28 shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold text-gray-900">Filter By</h3>
+                        <button class="text-xs text-brand-600 font-semibold hover:underline">Clear</button>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Categories</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 custom-checkbox">
+                                    <span class="text-sm text-gray-600 group-hover:text-gray-900 transition">Furniture</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 custom-checkbox">
+                                    <span class="text-sm text-gray-600 group-hover:text-gray-900 transition">Electronics</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 custom-checkbox">
+                                    <span class="text-sm text-gray-600 group-hover:text-gray-900 transition">Clothing</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 custom-checkbox">
+                                    <span class="text-sm text-gray-600 group-hover:text-gray-900 transition">Books</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="w-full h-px bg-gray-100"></div>
+
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Distance</h4>
+                            <input type="range" class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
+                            <div class="flex justify-between text-xs text-gray-500 mt-2">
+                                <span>1km</span>
+                                <span class="font-bold text-brand-900">15km</span>
+                                <span>50km</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="flex-1">
+                
+                <div class="flex justify-between items-center mb-6">
+                    <p class="text-sm text-gray-500">Showing <span class="font-bold text-gray-900">1-6</span> of 24 items</p>
+                    <select class="bg-transparent border-none text-sm font-medium text-gray-700 focus:ring-0 cursor-pointer hover:text-brand-900">
+                        <option>Sort by: Newest</option>
+                        <option>Sort by: Closest</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <div class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
+                        <div class="relative h-56 rounded-xl overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1567016432779-094069958ea5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Sofa" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                            <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">Furniture</div>
+                            <div class="absolute top-3 right-3 bg-black/40 backdrop-blur text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-600 transition cursor-pointer"><i class="fa-regular fa-heart"></i></div>
+                        </div>
+                        <div class="pt-4 px-2 pb-2">
+                            <h3 class="font-bold text-lg text-gray-900 truncate">Modern Grey Sofa</h3>
+                            <p class="text-sm text-gray-500 mt-1 flex items-center gap-1"><i class="fa-solid fa-location-dot text-brand-400"></i> 2.5 km away</p>
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-900">JS</div>
+                                    <span class="text-xs text-gray-500">John S.</span>
+                                </div>
+                                <span class="text-xs text-gray-400">2h ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
+                        <div class="relative h-56 rounded-xl overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Books" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                            <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">Books</div>
+                            <div class="absolute top-3 right-3 bg-black/40 backdrop-blur text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-600 transition cursor-pointer"><i class="fa-regular fa-heart"></i></div>
+                        </div>
+                        <div class="pt-4 px-2 pb-2">
+                            <h3 class="font-bold text-lg text-gray-900 truncate">Collection of Novels</h3>
+                            <p class="text-sm text-gray-500 mt-1 flex items-center gap-1"><i class="fa-solid fa-location-dot text-brand-400"></i> 0.8 km away</p>
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-900">AM</div>
+                                    <span class="text-xs text-gray-500">Anna M.</span>
+                                </div>
+                                <span class="text-xs text-gray-400">5h ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
+                        <div class="relative h-56 rounded-xl overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1519183071298-a2962feb80f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Bike" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                            <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">Sport</div>
+                            <div class="absolute top-3 right-3 bg-black/40 backdrop-blur text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-600 transition cursor-pointer"><i class="fa-regular fa-heart"></i></div>
+                        </div>
+                        <div class="pt-4 px-2 pb-2">
+                            <h3 class="font-bold text-lg text-gray-900 truncate">Kids Bicycle (Blue)</h3>
+                            <p class="text-sm text-gray-500 mt-1 flex items-center gap-1"><i class="fa-solid fa-location-dot text-brand-400"></i> 4.2 km away</p>
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-900">MK</div>
+                                    <span class="text-xs text-gray-500">Mike K.</span>
+                                </div>
+                                <span class="text-xs text-gray-400">1d ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
+                        <div class="relative h-56 rounded-xl overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Mixer" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                            <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">Electronics</div>
+                            <div class="absolute top-3 right-3 bg-black/40 backdrop-blur text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-600 transition cursor-pointer"><i class="fa-regular fa-heart"></i></div>
+                        </div>
+                        <div class="pt-4 px-2 pb-2">
+                            <h3 class="font-bold text-lg text-gray-900 truncate">Kitchen Mixer</h3>
+                            <p class="text-sm text-gray-500 mt-1 flex items-center gap-1"><i class="fa-solid fa-location-dot text-brand-400"></i> 1.1 km away</p>
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-xs font-bold text-purple-900">SJ</div>
+                                    <span class="text-xs text-gray-500">Sarah J.</span>
+                                </div>
+                                <span class="text-xs text-gray-400">3d ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
+                        <div class="relative h-56 rounded-xl overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1595341888016-a392ef81b7de?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Shoes" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                            <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">Clothing</div>
+                            <div class="absolute top-3 right-3 bg-black/40 backdrop-blur text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-600 transition cursor-pointer"><i class="fa-regular fa-heart"></i></div>
+                        </div>
+                        <div class="pt-4 px-2 pb-2">
+                            <h3 class="font-bold text-lg text-gray-900 truncate">Running Shoes (Size 8)</h3>
+                            <p class="text-sm text-gray-500 mt-1 flex items-center gap-1"><i class="fa-solid fa-location-dot text-brand-400"></i> 5.0 km away</p>
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-900">DK</div>
+                                    <span class="text-xs text-gray-500">David K.</span>
+                                </div>
+                                <span class="text-xs text-gray-400">4d ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
+                        <div class="relative h-56 rounded-xl overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1513506003013-d53476437bf5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Chair" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                            <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">Furniture</div>
+                            <div class="absolute top-3 right-3 bg-black/40 backdrop-blur text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-600 transition cursor-pointer"><i class="fa-regular fa-heart"></i></div>
+                        </div>
+                        <div class="pt-4 px-2 pb-2">
+                            <h3 class="font-bold text-lg text-gray-900 truncate">Wooden Chair</h3>
+                            <p class="text-sm text-gray-500 mt-1 flex items-center gap-1"><i class="fa-solid fa-location-dot text-brand-400"></i> 1.5 km away</p>
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-xs font-bold text-green-900">EL</div>
+                                    <span class="text-xs text-gray-500">Elena L.</span>
+                                </div>
+                                <span class="text-xs text-gray-400">1w ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div class="mt-12 flex justify-center gap-2">
+                    <button class="w-10 h-10 rounded-xl border border-gray-200 text-gray-400 hover:text-brand-900 hover:border-brand-900 transition flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="w-10 h-10 rounded-xl bg-brand-900 text-white font-medium shadow-lg shadow-brand-900/20">1</button>
+                    <button class="w-10 h-10 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium transition">2</button>
+                    <button class="w-10 h-10 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium transition">3</button>
+                    <button class="w-10 h-10 rounded-xl border border-gray-200 text-gray-400 hover:text-brand-900 hover:border-brand-900 transition flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mobile-filter-drawer" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" id="close-filter-backdrop"></div>
+        <div class="absolute right-0 top-0 h-full w-80 bg-white shadow-2xl p-6 overflow-y-auto flex flex-col transform transition-transform duration-300 translate-x-full" id="drawer-content">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="font-serif text-2xl font-bold text-gray-900">Filters</h2>
+                <button id="close-filter-btn" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition">
+                    <i class="fa-solid fa-xmark text-lg text-gray-700"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-8 flex-grow">
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Categories</h4>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-brand-600 custom-checkbox"><span class="text-gray-700 font-medium">Furniture</span></label>
+                        <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-brand-600 custom-checkbox"><span class="text-gray-700 font-medium">Electronics</span></label>
+                        <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-brand-600 custom-checkbox"><span class="text-gray-700 font-medium">Clothing</span></label>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Distance</h4>
+                    <input type="range" class="w-full h-2 bg-gray-200 rounded-lg appearance-none accent-brand-600">
+                    <div class="flex justify-between text-sm text-gray-500 mt-2"><span>1km</span><span>50km</span></div>
+                </div>
+            </div>
+
+            <button class="w-full bg-brand-900 text-white font-bold py-3.5 rounded-xl shadow-lg hover:bg-brand-800 transition mt-8">Show Results</button>
+        </div>
+    </div>
+
+    <footer class="bg-slate-50 pt-16 pb-8 border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-12">
+                <div class="col-span-1 md:col-span-1">
+                    <a href="#" class="flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-hand-holding-heart text-brand-900 text-2xl"></i>
+                        <span class="font-serif font-bold text-xl text-brand-900">Happy Donates</span>
+                    </a>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-4">
+                        Spreading happiness one donation at a time. Join our community of givers today.
+                    </p>
+                    <a href="https://play.google.com/store/apps/details?id=com.happy.happydonates" class="inline-flex items-center gap-2 text-xs font-bold text-brand-900 bg-white border border-gray-200 px-3 py-2 rounded-lg hover:shadow-md transition">
+                        <i class="fa-brands fa-google-play text-xl"></i>
+                        <span>GET IT ON<br><span class="text-sm">Google Play</span></span>
+                    </a>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Platform</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a href="index.html#browse" class="hover:text-brand-900 transition">Browse Items</a></li>
+                        <li><a href="index.html#how-it-works" class="hover:text-brand-900 transition">How it Works</a></li>
+                        <li><a href="#" class="hover:text-brand-900 transition">Safety Tips</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-brand-900 transition">Help Center</a></li>
+                        <li><a href="#" class="hover:text-brand-900 transition">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-brand-900 transition">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Stay Connected</h4>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white shadow-sm text-brand-900 flex items-center justify-center hover:bg-brand-900 hover:text-white transition"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white shadow-sm text-brand-900 flex items-center justify-center hover:bg-brand-900 hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white shadow-sm text-brand-900 flex items-center justify-center hover:bg-brand-900 hover:text-white transition"><i class="fa-brands fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center border-t border-gray-200 pt-8">
+                <p class="text-sm text-gray-400">&copy; 2025 Happy Donates. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Logic
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+            const icon = btn.querySelector('i');
+            if (menu.classList.contains('hidden')) {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            }
+        });
+
+        // Mobile Filter Drawer Logic
+        const filterBtn = document.getElementById('mobile-filter-btn');
+        const filterDrawer = document.getElementById('mobile-filter-drawer');
+        const drawerContent = document.getElementById('drawer-content');
+        const closeFilterBtn = document.getElementById('close-filter-btn');
+        const backdrop = document.getElementById('close-filter-backdrop');
+
+        function openDrawer() {
+            filterDrawer.classList.remove('hidden');
+            setTimeout(() => {
+                drawerContent.classList.remove('translate-x-full');
+            }, 10);
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeDrawer() {
+            drawerContent.classList.add('translate-x-full');
+            setTimeout(() => {
+                filterDrawer.classList.add('hidden');
+            }, 300);
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        filterBtn.addEventListener('click', openDrawer);
+        closeFilterBtn.addEventListener('click', closeDrawer);
+        backdrop.addEventListener('click', closeDrawer);
+    </script>
+</body>
+</html>

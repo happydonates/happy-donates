@@ -98,7 +98,7 @@
                     <a href="index.html#download-app"
                         class="text-brand-600 hover:text-brand-800 font-medium transition flex items-center gap-1"><i
                             class="fa-brands fa-android"></i> Get App</a>
-                    <a href="index.html#browse"
+                    <a href="{% url 'browse_items' %}"
                         class="text-gray-600 hover:text-brand-900 font-medium transition">Browse</a>
                     <div class="h-6 w-px bg-gray-200 mx-2"></div>
                     <a href="{% url 'login_user' %}" class="text-brand-900 font-bold transition">Login</a>
@@ -121,7 +121,7 @@
                 <a href="index.html#how-it-works"
                     class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">How it
                     Works</a>
-                <a href="index.html#browse"
+                <a href="{% url 'browse_items' %}"
                     class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">Browse
                     Items</a>
                 <a href="{% url 'login_user' %}"

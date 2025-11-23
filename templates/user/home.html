@@ -112,7 +112,7 @@
                     <a href="#download-app"
                         class="text-brand-600 hover:text-brand-800 font-medium transition flex items-center gap-1"><i
                             class="fa-brands fa-android"></i> Get App</a>
-                    <a href="#browse" class="text-gray-600 hover:text-brand-900 font-medium transition">Browse</a>
+                    <a href="{% url 'browse_items' %}" class="text-gray-600 hover:text-brand-900 font-medium transition">Browse</a>
 
                     <div class="h-6 w-px bg-gray-200 mx-2"></div>
 
@@ -154,7 +154,7 @@
                 <a href="#how-it-works"
                     class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">How it
                     Works</a>
-                <a href="#browse"
+                <a href="{% url 'browse_items' %}"
                     class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">Browse
                     Items</a>
                 <a href="#download-app"
@@ -553,7 +553,8 @@
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
 
                 {% for post in latest_posts %}
-                <div class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
+                <a href="{% url 'item_detail' post.slug %}" 
+   class="block bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group">
                     <div class="relative h-52 md:h-60 rounded-xl overflow-hidden">
                         {% if post.images %}
                             <img src="{{ post.images.url }}" alt="{{ post.title }}" 
@@ -586,7 +587,7 @@
                             <span class="text-xs text-gray-400">{{ post.create_at|timesince }} ago</span>
                         </div>
                     </div>
-                </div>
+                </a>
                 {% empty %}
                 <div class="col-span-full py-12 text-center">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4 text-gray-400">
@@ -600,7 +601,7 @@
             </div>
 
             <div class="mt-12 text-center">
-                <a href="#"
+                <a href="{% url 'browse_items' %}"
                     class="inline-block border border-brand-200 text-brand-900 hover:bg-brand-50 font-medium px-8 py-3 rounded-full transition">
                     View All Items
                 </a>

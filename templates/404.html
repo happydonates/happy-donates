@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found | Happy Donates</title>
+    <meta name="description" content="Page not found. Return to Happy Donates home.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            200: '#fbcfe8',
+                            300: '#f9a8d4',
+                            400: '#f472b6',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d',
+                            800: '#9d174d',
+                            900: '#8B1E4C',
+                            950: '#500724',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+
+<body class="font-sans text-gray-600 antialiased bg-slate-50 flex flex-col min-h-screen">
+
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="/" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-900 text-xl group-hover:bg-brand-900 group-hover:text-white transition duration-300">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-serif font-bold text-2xl text-brand-900 leading-none">Happy</span>
+                        <span class="text-xs font-semibold tracking-widest text-brand-600 uppercase">Donates</span>
+                    </div>
+                </a>
+                
+                <a href="/" class="hidden md:flex items-center gap-2 text-gray-600 hover:text-brand-900 font-medium transition">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex items-center justify-center pt-20 pb-10 px-4 relative overflow-hidden">
+        
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-brand-100 rounded-full blur-3xl opacity-40 -z-10 animate-float"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-pink-100 rounded-full blur-3xl opacity-40 -z-10" style="animation-delay: 1s;"></div>
+
+        <div class="text-center max-w-2xl mx-auto">
+            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white shadow-lg mb-8 text-brand-200 text-5xl relative group">
+                <i class="fa-solid fa-box-open group-hover:scale-110 transition duration-300"></i>
+                <div class="absolute -top-2 -right-2 w-8 h-8 bg-brand-900 rounded-full flex items-center justify-center text-white text-sm border-4 border-slate-50">?</div>
+            </div>
+
+            <h1 class="font-serif text-8xl md:text-9xl font-bold text-brand-900/10 absolute select-none top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -z-20">
+                404
+            </h1>
+            
+            <h2 class="font-serif text-3xl md:text-5xl font-bold text-gray-900 mb-4 relative">
+                Oops! Looking for something?
+            </h2>
+            
+            <p class="text-lg text-gray-500 mb-10 leading-relaxed">
+                We couldn't find the page you were looking for. It might have been donated to a new home, or the link is broken.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/" class="px-8 py-3.5 bg-brand-900 text-white rounded-full font-medium hover:bg-brand-800 transition shadow-lg shadow-brand-900/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-house"></i> Return Home
+                </a>
+                <a href="#" class="px-8 py-3.5 bg-white text-gray-700 border border-gray-200 rounded-full font-medium hover:bg-gray-50 hover:text-brand-900 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass"></i> Browse Items
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">&copy; 2025 Happy Donates. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

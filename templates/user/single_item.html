@@ -1,0 +1,406 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ post.title }} | Happy Donates</title>
+    <meta name="description" content="{{ post.description|truncatewords:20 }}">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fdf2f8', 100: '#fce7f3', 200: '#fbcfe8', 300: '#f9a8d4',
+                            400: '#f472b6', 500: '#ec4899', 600: '#db2777', 700: '#be185d',
+                            800: '#9d174d', 900: '#8B1E4C', 950: '#500724',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Glass Navbar */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        /* Hide scrollbar but keep functionality */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="font-sans text-gray-600 antialiased bg-white flex flex-col min-h-screen selection:bg-brand-100 selection:text-brand-900 overflow-x-hidden">
+
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="{% url 'user_home' %}" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-900 text-xl group-hover:bg-brand-900 group-hover:text-white transition duration-300">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-serif font-bold text-2xl text-brand-900 leading-none">Happy</span>
+                        <span class="text-xs font-semibold tracking-widest text-brand-600 uppercase">Donates</span>
+                    </div>
+                </a>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{% url 'user_home' %}" class="text-gray-600 hover:text-brand-900 font-medium transition">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-brand-900 font-medium transition">How it Works</a>
+                    <a href="#" class="text-brand-600 hover:text-brand-800 font-medium transition flex items-center gap-1"><i class="fa-brands fa-android"></i> Get App</a>
+                    <a href="{% url 'browse_items' %}" class="text-brand-900 font-bold transition">Browse</a>
+                    <div class="h-6 w-px bg-gray-200 mx-2"></div>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'user_profile' %}" class="flex items-center gap-2 group">
+                        <div class="w-8 h-8 rounded-full bg-brand-100 text-brand-900 flex items-center justify-center text-xs font-bold border border-brand-200 group-hover:bg-brand-900 group-hover:text-white transition">
+                            {{ user.username|make_list|first|upper }}
+                        </div>
+                        <span class="text-gray-900 font-medium group-hover:text-brand-600 transition">{{ user.username }}</span>
+                    </a>
+                    <a href="{% url 'logout_user' %}" title="Logout" class="text-gray-400 hover:text-red-500 transition"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+                    {% else %}
+                    <a href="{% url 'login_user' %}" class="text-gray-900 font-medium hover:text-brand-600 transition">Login</a>
+                    {% endif %}
+                    <a href="#" class="bg-brand-900 text-white px-6 py-2.5 rounded-full font-medium hover:bg-brand-800 transition shadow-lg shadow-brand-900/20 transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Donate Now
+                    </a>
+                </div>
+                <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-brand-900 focus:outline-none p-2">
+                    <i class="fa-solid fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full shadow-xl max-h-[90vh] overflow-y-auto">
+            <div class="px-4 pt-2 pb-6 space-y-1">
+                <a href="{% url 'user_home' %}" class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">Home</a>
+                <a href="#" class="block px-3 py-3 rounded-lg text-base font-bold text-brand-900 bg-brand-50">Browse Items</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'logout_user' %}" class="block px-3 py-3 rounded-lg text-base font-medium text-red-500 hover:bg-red-50">Logout</a>
+                {% else %}
+                <a href="{% url 'login_user' %}" class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-24 md:pt-32 pb-16 flex-grow w-full">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-xs text-gray-400 mb-4 md:mb-6 flex flex-wrap items-center gap-2">
+                <a href="/" class="hover:text-brand-900">Home</a> <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <a href="#" class="hover:text-brand-900">{{ post.sub_category.main_category_id.main_category_name|default:"Category" }}</a> <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span class="text-gray-800 font-medium">{{ post.sub_category.sub_category_name|default:"Item" }}</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16">
+                
+                <div>
+                    <div class="aspect-square md:aspect-[4/3] w-full bg-gray-50 rounded-xl border border-gray-100 overflow-hidden relative mb-4 group">
+                        {% if post.images %}
+                            <img id="main-image" src="{{ post.images.url }}" class="w-full h-full object-cover md:object-contain mix-blend-normal md:mix-blend-multiply p-0 md:p-8 transition duration-500">
+                        {% else %}
+                            <div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">No Image</div>
+                        {% endif %}
+                        
+                        <div class="absolute top-4 right-4 flex gap-2">
+                             <span class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-gray-700 shadow-sm border border-gray-100">
+                                Qty: {{ post.quantity }}
+                             </span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                        {% if post.images %}
+                         <button class="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 rounded-lg border-2 border-brand-900 bg-gray-50 p-1 transition overflow-hidden">
+                            <img src="{{ post.images.url }}" class="w-full h-full object-cover rounded">
+                         </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="mb-1">
+                         <span class="text-brand-600 font-bold uppercase tracking-wider text-xs">{{ post.status }}</span>
+                    </div>
+                    <h1 class="font-serif text-2xl md:text-4xl font-bold text-gray-900 mb-2">{{ post.title }}</h1>
+                    
+                    <div class="flex items-center gap-4 text-sm text-gray-500 mb-6 border-b border-gray-100 pb-6">
+                         <div class="flex items-center gap-1">
+                             <i class="fa-solid fa-location-dot"></i> 
+                             {{ post.location.district_name }}, {{ post.location.state_id.state_name }}
+                         </div>
+                         <div class="flex items-center gap-1">
+                             <i class="fa-regular fa-clock"></i> 
+                             {{ post.create_at|timesince }} ago
+                         </div>
+                    </div>
+
+                    <div class="bg-brand-50 rounded-xl p-5 border border-brand-100 mb-8">
+                        <h3 class="font-bold text-brand-900 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide">
+                            <i class="fa-solid fa-shield-halved text-lg text-brand-600"></i> Safety Tips
+                        </h3>
+                        <ul class="space-y-2 text-sm text-brand-900">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check mt-1 text-brand-600 text-xs"></i>
+                                <span>Meet in a public place (cafe, mall, station).</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check mt-1 text-brand-600 text-xs"></i>
+                                <span>Check the item condition before accepting.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check mt-1 text-brand-600 text-xs"></i>
+                                <span>Bring a friend for heavy items.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="font-bold text-gray-900 mb-2">Description</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            {{ post.description }}
+                        </p>
+                        
+                        {% if post.address %}
+                        <div class="mt-4">
+                            <h4 class="font-bold text-gray-900 text-sm mb-1">Pickup Address:</h4>
+                            <p class="text-gray-600 text-sm">{{ post.address }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-between mb-6 border border-gray-100">
+                        <div class="flex items-center gap-3">
+                            {% if post.user.image.profile_image %}
+                                <img src="{{ post.user.image.profile_image.url }}" class="w-10 h-10 rounded-full border border-white shadow-sm object-cover">
+                            {% else %}
+                                <div class="w-10 h-10 rounded-full border border-white shadow-sm bg-gray-300 flex items-center justify-center">
+                                    <i class="fa-solid fa-user text-white"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div>
+                                <div class="text-xs text-gray-500">Donated by</div>
+                                <div class="text-sm font-bold text-gray-900">
+                                    {% if post.user.image.full_name %}
+                                        {{ post.user.image.full_name }}
+                                    {% else %}
+                                        {{ post.user.username }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-xs font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-full">Verified</div>
+                    </div>
+
+                    <div class="flex gap-3 relative">
+                        <a href="tel:{{ post.contact_number }}" class="flex-1 bg-brand-900 hover:bg-brand-800 text-white font-bold py-3.5 rounded-lg shadow-md transition flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-envelope"></i> Contact Donor
+                        </a>
+                        
+                        <button class="px-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 transition">
+                            <i class="fa-regular fa-heart text-lg"></i>
+                        </button>
+                        
+                        <div class="relative">
+                            <button id="share-toggle-btn" class="px-4 h-full border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 transition flex items-center justify-center">
+                                <i class="fa-solid fa-share-nodes text-lg"></i>
+                            </button>
+                            
+                            <div id="share-dropdown" class="hidden absolute bottom-full right-0 mb-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-20 transform transition-all origin-bottom-right">
+                                <a href="#" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-900 flex items-center gap-3">
+                                    <i class="fa-brands fa-whatsapp text-green-500 text-lg"></i> WhatsApp
+                                </a>
+                                <a href="#" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-900 flex items-center gap-3 border-t border-gray-50">
+                                    <i class="fa-brands fa-facebook text-blue-600 text-lg"></i> Facebook
+                                </a>
+                                <a href="#" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-900 flex items-center gap-3 border-t border-gray-50">
+                                    <i class="fa-brands fa-twitter text-sky-500 text-lg"></i> Twitter
+                                </a>
+                                <a href="#" onclick="copyLink(event)" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-900 flex items-center gap-3 border-t border-gray-50">
+                                    <i class="fa-regular fa-copy text-gray-500 text-lg"></i> Copy Link
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-xs text-gray-400 mt-4 text-center">
+                        <i class="fa-solid fa-shield-halved mr-1"></i> 
+                        For safety, meet in public places for pickup.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="bg-gray-50 py-12 border-t border-gray-200 w-full">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-serif text-xl md:text-2xl font-bold text-gray-900">Similar Items Nearby</h2>
+                <a href="#" class="text-brand-600 font-bold text-sm hover:underline">View All</a>
+            </div>
+            
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                {% if similar_items %}
+                    {% for item in similar_items %}
+                    <a href="{% url 'item_detail' item.slug %}" class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group block">
+                        <div class="relative h-32 md:h-48 rounded-xl overflow-hidden">
+                            {% if item.images %}
+                                <img src="{{ item.images.url }}" alt="{{ item.title }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center bg-gray-200 text-xs">No Image</div>
+                            {% endif %}
+                            <div class="absolute top-2 left-2 md:top-3 md:left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-[10px] md:text-xs font-bold text-brand-900">
+                                {{ item.sub_category.sub_category_name }}
+                            </div>
+                        </div>
+                        <div class="pt-4 px-1 md:px-2 pb-2">
+                            <h3 class="font-bold text-sm md:text-base text-gray-900 truncate">{{ item.title }}</h3>
+                            <p class="text-[10px] md:text-xs text-gray-500 mt-1 flex items-center gap-1">
+                                <i class="fa-solid fa-location-dot text-brand-400"></i> {{ item.location.district_name }}
+                            </p>
+                            <div class="mt-3 pt-2 border-t border-gray-100 flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-5 h-5 rounded-full bg-brand-100 flex items-center justify-center text-[10px] font-bold text-brand-900">
+                                        {{ item.user.username|slice:":2"|upper }}
+                                    </div>
+                                    <span class="text-[10px] text-gray-500">{{ item.user.username }}</span>
+                                </div>
+                                <span class="text-[10px] text-gray-400">{{ item.create_at|timesince }} ago</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <p class="col-span-4 text-center text-gray-400 italic py-8">No similar items found nearby.</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-50 pt-16 pb-8 border-t border-gray-200 mt-auto w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+                <div class="col-span-2 md:col-span-1">
+                    <a href="#" class="flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-hand-holding-heart text-brand-900 text-2xl"></i>
+                        <span class="font-serif font-bold text-xl text-brand-900">Happy Donates</span>
+                    </a>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-4">
+                        Spreading happiness one donation at a time. Join our community of givers today.
+                    </p>
+                    <a href="https://play.google.com/store/apps/details?id=com.happy.happydonates" class="inline-flex items-center gap-2 text-xs font-bold text-brand-900 bg-white border border-gray-200 px-3 py-2 rounded-lg hover:shadow-md transition">
+                        <i class="fa-brands fa-google-play text-xl"></i>
+                        <span>GET IT ON<br><span class="text-sm">Google Play</span></span>
+                    </a>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Platform</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-brand-900 transition">Browse Items</a></li>
+                        <li><a href="#" class="hover:text-brand-900 transition">How it Works</a></li>
+                        <li><a href="#" class="hover:text-brand-900 transition">Safety Tips</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-brand-900 transition">Help Center</a></li>
+                        <li><a href="#" class="hover:text-brand-900 transition">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-brand-900 transition">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-span-2 md:col-span-1">
+                    <h4 class="font-bold text-gray-900 mb-4">Stay Connected</h4>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white shadow-sm text-brand-900 flex items-center justify-center hover:bg-brand-900 hover:text-white transition"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white shadow-sm text-brand-900 flex items-center justify-center hover:bg-brand-900 hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white shadow-sm text-brand-900 flex items-center justify-center hover:bg-brand-900 hover:text-white transition"><i class="fa-brands fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center border-t border-gray-200 pt-8">
+                <p class="text-sm text-gray-400">&copy; 2025 Happy Donates. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Logic
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+            const icon = btn.querySelector('i');
+            if (menu.classList.contains('hidden')) {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            }
+        });
+
+        // Image Switcher Logic (Modified slightly since we only have 1 image from Django)
+        function changeImage(element, src) {
+            const mainImage = document.getElementById('main-image');
+            mainImage.src = src;
+            
+            // Handle active border state
+            const siblings = element.parentElement.children;
+            for (let i = 0; i < siblings.length; i++) {
+                siblings[i].classList.remove('border-brand-900');
+                siblings[i].classList.add('border-transparent');
+            }
+            element.classList.remove('border-transparent');
+            element.classList.add('border-brand-900');
+        }
+
+        // Share Dropdown Logic
+        const shareBtn = document.getElementById('share-toggle-btn');
+        const shareDropdown = document.getElementById('share-dropdown');
+
+        shareBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent click from closing immediately
+            shareDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!shareBtn.contains(e.target) && !shareDropdown.contains(e.target)) {
+                shareDropdown.classList.add('hidden');
+            }
+        });
+
+        // Copy Link Function
+        function copyLink(e) {
+            e.preventDefault();
+            navigator.clipboard.writeText(window.location.href);
+            alert('Link copied to clipboard!');
+            shareDropdown.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
