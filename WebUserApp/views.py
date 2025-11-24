@@ -45,20 +45,20 @@ def register_view(request):
    
         if not full_name or not username or not email or not password or not password2:
             messages.error(request, "Please fill all required fields.")
-            return redirect('user_registe')
+            return redirect('user_register')
 
         if password != password2:
             messages.error(request, "Passwords do not match.")
-            return redirect('user_registe')
+            return redirect('user_register')
 
     
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already taken.")
-            return redirect('user_registe')
+            return redirect('user_register')
 
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email already registered.")
-            return redirect('user_registe')
+            return redirect('user_register')
 
         parts = full_name.split()
         first_name = parts[0]
