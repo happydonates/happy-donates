@@ -1,3 +1,5 @@
+{% load static %}
+
 {% if is_htmx %}
 <div id="district-container" hx-swap-oob="true">
     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">District</label>
@@ -10,7 +12,7 @@
                 class="w-full appearance-none bg-gray-50 text-gray-700 border border-gray-200 hover:border-brand-400 hover:bg-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-brand-500 transition shadow-sm cursor-pointer text-sm font-medium">
             <option value="">Select District</option>
             {% for district in districts %}
-                <option value="{{ district.district_id }}" {% if district.district_id == selected_district %}selected{% endif %}>
+                <option value="{{ district.district_id }}" {% if district.district_id|stringformat:"i" == selected_district %}selected{% endif %}>
                     {{ district.district_name }}
                 </option>
             {% endfor %}
@@ -22,11 +24,11 @@
 </div>
 {% endif %}
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 fade-in">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in w-full">
     {% for post in page_obj %}
     <a href="{% url 'item_detail' post.slug %}" 
-   class="block bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group flex flex-col">
-        <div class="relative h-56 rounded-xl overflow-hidden flex-shrink-0">
+   class="block w-full bg-white rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group flex flex-col">
+        <div class="relative h-56 rounded-xl overflow-hidden flex-shrink-0 w-full">
             {% if post.images %}
                 <img src="{{ post.images.url }}" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
             {% else %}
@@ -37,14 +39,14 @@
             </div>
         </div>
         <div class="pt-4 px-2 pb-2 flex flex-col flex-grow">
-            <h3 class="font-bold text-lg text-gray-900 truncate">{{ post.title }} {{post.id}}</h3>
+            <h3 class="font-bold text-lg text-gray-900 truncate">{{ post.title }}</h3>
             <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
                 <i class="fa-solid fa-location-dot text-brand-400"></i> {{ post.location.district_name }}
             </p>
             <div class="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <div class="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-900 uppercase">
-                        {{ post.user.username|slice:":2" }}
+                        {{ post.user.username|slice:":1" }}
                     </div>
                     <span class="text-xs text-gray-500 truncate max-w-[80px]">{{ post.user.username }}</span>
                 </div>
@@ -61,7 +63,7 @@
 </div>
 
 {% if page_obj.has_other_pages %}
-<div class="mt-12 flex justify-center gap-2">
+<div class="mt-12 flex justify-center gap-2 flex-wrap">
     {% if page_obj.has_previous %}
     <button hx-get="?page={{ page_obj.previous_page_number }}" 
             hx-include="#filterForm"

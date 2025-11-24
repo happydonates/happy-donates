@@ -1,0 +1,288 @@
+{% extends 'userbase.html' %}
+{% load static %}
+
+{% block title %}{{ donation.title|truncatechars:30 }} | Happy Donates{% endblock %}
+
+{% block content %}
+<div class="pt-24 pb-20 bg-gray-50/80 min-h-screen w-full overflow-x-hidden font-sans">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+        <nav class="flex items-center text-sm font-medium text-gray-500 mb-4">
+            <a href="{% url 'user_home' %}" class="hover:text-brand-900 transition-colors">Home</a>
+            <i class="fa-solid fa-chevron-right text-[10px] mx-2 text-gray-300"></i>
+            <a href="{% url 'donation_list' %}" class="hover:text-brand-900 transition-colors">Donations</a>
+            <i class="fa-solid fa-chevron-right text-[10px] mx-2 text-gray-300"></i>
+            <span class="text-gray-900 truncate max-w-[150px] sm:max-w-xs">{{ donation.title }}</span>
+        </nav>
+
+        <div class="lg:hidden mb-6">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide {{ theme.bg }} {{ theme.text }} mb-3 ring-1 ring-inset {{ theme.border }}">
+                <i class="fa-solid {{ theme.icon }}"></i> {{ donation.category.donation_category_name }}
+            </span>
+            <h1 class="text-2xl font-bold text-gray-900 leading-tight break-words">{{ donation.title }}</h1>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+            <div class="lg:col-span-8 space-y-8 w-full max-w-full">
+                
+                <div class="bg-white rounded-3xl p-2 shadow-xl shadow-gray-200/50 border border-white">
+                    <div class="relative w-full aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden bg-gray-100">
+                        {% if donation.images %}
+                            <img src="{{ donation.images.url }}" alt="{{ donation.title }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700">
+                        {% else %}
+                            <div class="w-full h-full flex flex-col items-center justify-center text-gray-300 bg-gray-50">
+                                <i class="fa-regular fa-image text-5xl mb-2"></i>
+                                <span class="text-sm font-medium">No Image Provided</span>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="absolute top-4 left-4">
+                             <div class="bg-white/90 backdrop-blur-md text-gray-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm border border-white/50 flex items-center gap-1.5">
+                                <i class="fa-solid fa-clock text-brand-600"></i>
+                                {% if days_left > 0 %}{{ days_left }} Days Left{% else %}Closed{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-2 sticky top-24 z-30 mx-0 overflow-hidden">
+                    <div class="flex space-x-1 overflow-x-auto no-scrollbar" role="tablist">
+                        <button onclick="switchTab('story')" id="tab-story" class="flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-sm font-bold transition-all duration-300 bg-brand-900 text-white shadow-md">
+                            Details
+                        </button>
+                        <button onclick="switchTab('docs')" id="tab-docs" class="flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all duration-300">
+                            Documents
+                        </button>
+                        <button onclick="switchTab('safety')" id="tab-safety" class="flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all duration-300">
+                            Safety
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 p-6 md:p-10 min-h-[300px]">
+                    
+                    <div id="content-story" class="space-y-8 animate-fade-in">
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="{{ theme.bg }} rounded-2xl p-5 border {{ theme.border }}">
+                                <p class="text-xs font-bold uppercase {{ theme.text }} opacity-70 mb-1">Beneficiary</p>
+                                <p class="text-gray-900 font-bold text-lg leading-tight truncate">
+                                    {{ donation.donation_user_name|default:"Not Listed" }}
+                                </p>
+                            </div>
+                            <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                                <p class="text-xs font-bold uppercase text-gray-500 mb-1">Location</p>
+                                <p class="text-gray-900 font-bold text-lg leading-tight truncate">
+                                    {{ donation.location.district_name }}
+                                </p>
+                                <p class="text-xs text-gray-400 mt-0.5">{{ donation.location.state_id.state_name }}</p>
+                            </div>
+                        </div>
+
+                        <div class="prose prose-lg max-w-none text-gray-600">
+                            <h3 class="font-serif font-bold text-gray-900 text-xl mb-4">The Story</h3>
+                            <div class="whitespace-pre-line break-words leading-relaxed text-base">
+                                {{ donation.description }}
+                            </div>
+                        </div>
+
+                        {% if donation.comments %}
+                        <div class="relative pl-6 border-l-4 border-yellow-400 bg-yellow-50/50 p-4 rounded-r-xl">
+                            <i class="fa-solid fa-quote-left absolute top-4 left-0 -translate-x-1/2 -ml-3 bg-yellow-400 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs"></i>
+                            <p class="text-gray-800 italic font-medium">"{{ donation.comments }}"</p>
+                            <p class="text-xs text-gray-400 mt-2 font-bold uppercase tracking-wider">— Organizer's Note</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div id="content-docs" class="hidden space-y-6 animate-fade-in">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-gray-900 text-lg">Attached Files</h3>
+                            <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-bold">Verified</span>
+                        </div>
+
+                        {% if donation.donation_file %}
+                        <a href="{{ donation.donation_file.url }}" target="_blank" class="group flex items-center p-4 border border-gray-200 rounded-2xl hover:border-brand-500 hover:shadow-lg transition-all bg-gray-50 hover:bg-white cursor-pointer">
+                            <div class="w-14 h-14 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-red-500 text-2xl group-hover:scale-110 transition-transform shadow-sm">
+                                <i class="fa-regular fa-file-pdf"></i>
+                            </div>
+                            <div class="ml-4 flex-1 overflow-hidden">
+                                <p class="font-bold text-gray-900 truncate">Verification Document</p>
+                                <p class="text-sm text-gray-500">Click to view/download</p>
+                            </div>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-brand-600"></i>
+                        </a>
+                        {% else %}
+                        <div class="text-center py-10 px-4 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                            <i class="fa-solid fa-folder-open text-4xl text-gray-300 mb-3"></i>
+                            <p class="text-gray-500 font-medium">No documents attached publicly.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div id="content-safety" class="hidden space-y-6 animate-fade-in">
+                        <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+                            <div class="flex gap-3">
+                                <i class="fa-solid fa-shield-halved text-blue-600 text-xl mt-1"></i>
+                                <div>
+                                    <h4 class="font-bold text-blue-900 text-sm uppercase tracking-wide">Trust & Safety</h4>
+                                    <p class="text-sm text-blue-800 mt-1 leading-relaxed">
+                                        HappyDonates is a connection platform. We do not process payments. Always verify the beneficiary directly before providing assistance.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h3 class="font-bold text-gray-900">Verification Checklist</h3>
+                            <div class="flex gap-4 items-start">
+                                <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0 mt-0.5">1</div>
+                                <p class="text-sm text-gray-600"><strong class="text-gray-900">Check IDs:</strong> Ask to see the Hospital ID, School ID, or Government ID related to the request.</p>
+                            </div>
+                            <div class="flex gap-4 items-start">
+                                <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0 mt-0.5">2</div>
+                                <p class="text-sm text-gray-600"><strong class="text-gray-900">Direct Payment:</strong> If money is requested, offer to pay the institution (School/Hospital) directly via their official bank account.</p>
+                            </div>
+                            <div class="flex gap-4 items-start">
+                                <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0 mt-0.5">3</div>
+                                <p class="text-sm text-gray-600"><strong class="text-gray-900">Meet Safely:</strong> For physical item donations, meet in public, well-lit areas.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 w-full">
+                <div class="sticky top-24 space-y-6">
+
+                    <div class="hidden lg:block">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide {{ theme.bg }} {{ theme.text }} mb-4 ring-1 ring-inset {{ theme.border }}">
+                            <i class="fa-solid {{ theme.icon }}"></i> {{ donation.category.donation_category_name }}
+                        </span>
+                        <h1 class="text-3xl font-bold text-gray-900 leading-tight mb-2">{{ donation.title }}</h1>
+                        <p class="text-sm text-gray-500">Posted on {{ donation.create_at|date:"F d, Y" }}</p>
+                    </div>
+
+                    <div class="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 p-6 relative overflow-hidden">
+                        <div class="absolute -top-10 -right-10 w-32 h-32 bg-brand-50 rounded-full blur-2xl opacity-50 pointer-events-none"></div>
+
+                        <div class="relative z-10">
+<a href="{% url 'public_profile' username=donation.user.username %}" class="flex items-center gap-4 mb-6 group transition-opacity hover:opacity-90">
+    {% if donation.user.image.profile_image %}
+        <img src="{{ donation.user.image.profile_image.url }}" class="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md">
+    {% else %}
+        <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-xl border-2 border-white shadow-md">
+            {{ donation.user.username|slice:":1"|upper }}
+        </div>
+    {% endif %}
+    
+    <div>
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Organizer</p>
+        <h3 class="text-lg font-bold text-gray-900 truncate max-w-[180px] group-hover:text-brand-900 transition-colors">
+            {{ donation.user.image.full_name|default:donation.user.username }}
+        </h3>
+        <div class="flex items-center gap-1 text-xs text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded-full w-fit mt-1">
+            <i class="fa-solid fa-check-circle"></i> Verified User
+        </div>
+    </div>
+</a>
+                            <hr class="border-gray-100 mb-6">
+
+                            <div class="space-y-3">
+                                {% if donation.contact_number %}
+                                <a href="tel:{{ donation.contact_number }}" class="flex items-center justify-center w-full py-4 bg-gray-900 hover:bg-black text-white text-lg font-bold rounded-xl shadow-lg shadow-gray-900/20 transform hover:-translate-y-1 transition-all duration-300">
+                                    <i class="fa-solid fa-phone mr-3 animate-pulse"></i> Contact to Help
+                                </a>
+                                {% else %}
+                                <button disabled class="w-full py-4 bg-gray-100 text-gray-400 font-bold rounded-xl cursor-not-allowed">
+                                    Contact Hidden
+                                </button>
+                                {% endif %}
+
+                                <button onclick="sharePage()" class="flex items-center justify-center w-full py-3 bg-white border-2 border-gray-100 hover:border-brand-200 text-gray-700 font-bold rounded-xl transition-all duration-300 group">
+                                    <i class="fa-solid fa-share-nodes mr-2 group-hover:text-brand-600"></i> Share Request
+                                </button>
+                            </div>
+
+                            <p class="text-center text-xs text-gray-400 mt-4 leading-relaxed">
+                                By contacting, you agree to our <a href="#" class="underline hover:text-gray-600">Safety Guidelines</a>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex gap-4 items-center">
+                        <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-location-dot text-lg"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-gray-900 truncate">{{ donation.address|default:"Address available on contact" }}</p>
+                            <p class="text-xs text-gray-500">{{ donation.location.district_name }}, {{ donation.location.state_id.state_name }}</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabName) {
+        // 1. Hide all content sections
+        ['story', 'docs', 'safety'].forEach(name => {
+            document.getElementById(`content-${name}`).classList.add('hidden');
+        });
+
+        // 2. Reset all buttons to "inactive" state (Gray text, white bg)
+        ['story', 'docs', 'safety'].forEach(name => {
+            const btn = document.getElementById(`tab-${name}`);
+            btn.className = "flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all duration-300";
+        });
+
+        // 3. Show selected content
+        document.getElementById(`content-${tabName}`).classList.remove('hidden');
+        
+        // 4. Set active button to "active" state (Brand bg, white text, shadow)
+        const activeBtn = document.getElementById(`tab-${tabName}`);
+        activeBtn.className = "flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-sm font-bold transition-all duration-300 bg-brand-900 text-white shadow-md";
+    }
+
+    function sharePage() {
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ donation.title }}',
+                text: 'Check out this donation request on Happy Donates: {{ donation.title }}',
+                url: window.location.href,
+            });
+        } else {
+            // Fallback for desktop/unsupported browsers
+            prompt("Copy this link to share:", window.location.href);
+        }
+    }
+</script>
+
+<style>
+    /* Custom utility to hide scrollbar but allow scrolling */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    /* Simple fade in animation for tabs */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+</style>
+{% endblock %}

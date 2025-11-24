@@ -1,120 +1,45 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browse Items | Happy Donates</title>
-    <meta name="description" content="Find free items in your neighborhood.">
+{% extends 'userbase.html' %}
+{% load static %}
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+{% block title %}Browse Items | Happy Donates{% endblock %}
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Poppins', 'sans-serif'], serif: ['Playfair Display', 'serif'] },
-                    colors: { brand: { 50: '#fdf2f8', 100: '#fce7f3', 200: '#fbcfe8', 300: '#f9a8d4', 400: '#f472b6', 500: '#ec4899', 600: '#db2777', 700: '#be185d', 800: '#9d174d', 900: '#8B1E4C', 950: '#500724' } },
-                }
-            }
-        }
-    </script>
+{% block content %}
     <style>
-        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.3); }
         .custom-checkbox:checked { background-color: #8B1E4C; border-color: #8B1E4C; }
-        .fade-in { animation: fadeIn 0.3s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        /* Hide scrollbar */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
-</head>
 
-<body class="font-sans text-gray-600 antialiased bg-slate-50 selection:bg-brand-100 selection:text-brand-900 flex flex-col min-h-screen">
-
-    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <a href="{% url 'user_home' %}" class="flex items-center gap-2 group">
-                    <div class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-900 text-xl group-hover:bg-brand-900 group-hover:text-white transition duration-300">
-                        <i class="fa-solid fa-hand-holding-heart"></i>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="font-serif font-bold text-2xl text-brand-900 leading-none">Happy</span>
-                        <span class="text-xs font-semibold tracking-widest text-brand-600 uppercase">Donates</span>
-                    </div>
-                </a>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="{% url 'user_home' %}" class="text-gray-600 hover:text-brand-900 font-medium transition">Home</a>
-                    <a href="#" class="text-gray-600 hover:text-brand-900 font-medium transition">How it Works</a>
-                    <a href="#" class="text-brand-600 hover:text-brand-800 font-medium transition flex items-center gap-1"><i class="fa-brands fa-android"></i> Get App</a>
-                    <a href="{% url 'browse_items' %}" class="text-brand-900 font-bold transition">Browse</a>
-                    <div class="h-6 w-px bg-gray-200 mx-2"></div>
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'user_profile' %}" class="flex items-center gap-2 group">
-                        <div class="w-8 h-8 rounded-full bg-brand-100 text-brand-900 flex items-center justify-center text-xs font-bold border border-brand-200 group-hover:bg-brand-900 group-hover:text-white transition">
-                            {{ user.username|make_list|first|upper }}
-                        </div>
-                        <span class="text-gray-900 font-medium group-hover:text-brand-600 transition">{{ user.username }}</span>
-                    </a>
-                    <a href="{% url 'logout_user' %}" title="Logout" class="text-gray-400 hover:text-red-500 transition"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
-                    {% else %}
-                    <a href="{% url 'login_user' %}" class="text-gray-900 font-medium hover:text-brand-600 transition">Login</a>
-                    {% endif %}
-                    <a href="#" class="bg-brand-900 text-white px-6 py-2.5 rounded-full font-medium hover:bg-brand-800 transition shadow-lg shadow-brand-900/20 transform hover:-translate-y-0.5 flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Donate Now
-                    </a>
-                </div>
-                <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-brand-900 focus:outline-none p-2">
-                    <i class="fa-solid fa-bars text-2xl"></i>
-                </button>
-            </div>
-        </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full shadow-xl max-h-[90vh] overflow-y-auto">
-            <div class="px-4 pt-2 pb-6 space-y-1">
-                <a href="{% url 'user_home' %}" class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">Home</a>
-                <a href="#" class="block px-3 py-3 rounded-lg text-base font-bold text-brand-900 bg-brand-50">Browse Items</a>
-                {% if user.is_authenticated %}
-                <a href="{% url 'logout_user' %}" class="block px-3 py-3 rounded-lg text-base font-medium text-red-500 hover:bg-red-50">Logout</a>
-                {% else %}
-                <a href="{% url 'login_user' %}" class="block px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:bg-gray-50">Login</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
-
-    <div class="pt-28 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-grow">
+    <div class="pt-24 md:pt-32 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full min-h-screen">
         
-        <form id="filterForm">
-            <div class="flex flex-col lg:flex-row justify-between items-end mb-8 gap-6">
+        <form id="filterForm" class="w-full max-w-full">
+            
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-4 w-full">
                 <div class="w-full lg:w-auto">
                     <span class="text-brand-600 font-bold tracking-wider uppercase text-xs">Community Giving</span>
                     <h1 class="font-serif text-3xl md:text-4xl font-bold text-gray-900 mt-2">Browse Donations</h1>
                 </div>
                 
                 <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                    <div class="relative flex-grow sm:w-72 group">
+                    <div class="relative w-full sm:w-72 group">
                         <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-600 transition"></i>
                         <input type="text" name="q" value="{{ search_query|default:'' }}" 
                                placeholder="Search items..." 
                                class="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-100 focus:border-brand-500 outline-none shadow-sm transition text-sm"
-                               hx-get="{% url 'browse_items' %}" hx-trigger="keyup changed delay:500ms" hx-target="#post-grid" hx-include="#filterForm" hx-push-url="true">
+                               hx-get="{% url 'browse_items' %}" 
+                               hx-trigger="keyup changed delay:500ms" 
+                               hx-target="#post-grid" 
+                               hx-include="#filterForm" 
+                               hx-push-url="true">
                     </div>
-                    <button type="button" id="mobile-filter-btn" class="lg:hidden bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 hover:bg-gray-50 font-medium text-sm">
+                    <button type="button" onclick="document.getElementById('mobile-filter-drawer').classList.remove('hidden')" class="lg:hidden w-full sm:w-auto bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 hover:bg-gray-50 font-medium text-sm transition">
                         <i class="fa-solid fa-sliders"></i> Filters
                     </button>
                 </div>
             </div>
 
-            <div class="flex gap-8 relative">
-                <aside class="hidden lg:block w-72 flex-shrink-0">
-                    <div class="bg-white rounded-2xl border border-gray-200 p-6 sticky top-28 shadow-sm">
+            <div class="flex flex-col lg:flex-row gap-8 relative items-start">
+                
+                <aside class="hidden lg:block w-72 flex-shrink-0 sticky top-28 h-fit z-30">
+                    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="font-bold text-gray-900">Filter By</h3>
                             <a href="{% url 'browse_items' %}" class="text-xs text-brand-600 font-semibold hover:underline">Clear</a>
@@ -123,12 +48,12 @@
                         <div class="space-y-6">
                             <div>
                                 <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Categories</h4>
-                                <div class="space-y-2">
+                                <div class="space-y-2 max-h-60 overflow-y-auto no-scrollbar">
                                     {% for category in categories %}
                                     <label class="flex items-center gap-3 cursor-pointer group p-1 rounded hover:bg-gray-50 transition">
                                         <input type="checkbox" name="categories" value="{{ category.main_category_id }}" 
-                                               {% if category.main_category_id in selected_categories %}checked{% endif %}
-                                               class="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 custom-checkbox"
+                                               {% if category.main_category_id|stringformat:"i" in selected_categories %}checked{% endif %}
+                                               class="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 custom-checkbox transition"
                                                hx-get="{% url 'browse_items' %}" hx-target="#post-grid" hx-include="#filterForm" hx-push-url="true">
                                         <span class="text-sm text-gray-600 group-hover:text-gray-900 font-medium">{{ category.main_category_name }}</span>
                                     </label>
@@ -147,7 +72,7 @@
                                                 class="w-full appearance-none bg-gray-50 text-gray-700 border border-gray-200 hover:border-brand-400 hover:bg-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-brand-500 transition shadow-sm cursor-pointer text-sm font-medium">
                                             <option value="">Select State</option>
                                             {% for state in states %}
-                                                <option value="{{ state.state_id }}" {% if state.state_id == selected_state %}selected{% endif %}>
+                                                <option value="{{ state.state_id }}" {% if state.state_id|stringformat:"i" == selected_state %}selected{% endif %}>
                                                     {{ state.state_name }}
                                                 </option>
                                             {% endfor %}
@@ -166,7 +91,7 @@
                                                 class="w-full appearance-none bg-gray-50 text-gray-700 border border-gray-200 hover:border-brand-400 hover:bg-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-brand-500 transition shadow-sm cursor-pointer text-sm font-medium">
                                             <option value="">Select District</option>
                                             {% for district in districts %}
-                                                <option value="{{ district.district_id }}" {% if district.district_id == selected_district %}selected{% endif %}>
+                                                <option value="{{ district.district_id }}" {% if district.district_id|stringformat:"i" == selected_district %}selected{% endif %}>
                                                     {{ district.district_name }}
                                                 </option>
                                             {% endfor %}
@@ -181,9 +106,9 @@
                     </div>
                 </aside>
 
-                <div class="flex-1">
-                    <div class="flex justify-between items-center mb-6">
-                        <p class="text-sm text-gray-500">Results</p>
+                <div class="flex-1 w-full min-w-0">
+                    <div class="flex justify-between items-center mb-6 bg-white p-3 rounded-xl border border-gray-100 shadow-sm lg:bg-transparent lg:p-0 lg:border-0 lg:shadow-none">
+                        <p class="text-sm text-gray-500 pl-2 lg:pl-0">Showing results</p>
                         <div class="relative min-w-[160px]">
                             <select name="sort" 
                                     hx-get="{% url 'browse_items' %}" hx-target="#post-grid" hx-include="#filterForm" hx-push-url="true"
@@ -197,61 +122,44 @@
                         </div>
                     </div>
 
-                    <div id="post-grid">
+                    <div id="post-grid" class="w-full">
                         {% include 'partials/post_list.html' %}
                     </div>
                 </div>
             </div>
 
             <div id="mobile-filter-drawer" class="fixed inset-0 z-[60] hidden">
-                <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" id="close-filter-backdrop"></div>
-                <div class="absolute right-0 top-0 h-full w-80 bg-white shadow-2xl p-6 overflow-y-auto flex flex-col transform transition-transform duration-300 translate-x-full" id="drawer-content">
+                <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="document.getElementById('mobile-filter-drawer').classList.add('hidden')"></div>
+                <div class="absolute right-0 top-0 h-full w-80 bg-white shadow-2xl p-6 overflow-y-auto flex flex-col">
                     <div class="flex justify-between items-center mb-8">
                         <h2 class="font-serif text-2xl font-bold text-gray-900">Filters</h2>
-                        <button type="button" id="close-filter-btn" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition">
+                        <button type="button" onclick="document.getElementById('mobile-filter-drawer').classList.add('hidden')" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition">
                             <i class="fa-solid fa-xmark text-lg text-gray-700"></i>
                         </button>
                     </div>
+                    
                     <div class="space-y-6 flex-grow">
-                        {% for category in categories %}
-                        <label class="flex items-center gap-3 mb-2">
-                            <input type="checkbox" name="categories" value="{{ category.main_category_id }}" class="w-5 h-5">
-                            <span>{{ category.main_category_name }}</span>
-                        </label>
-                        {% endfor %}
+                        <div>
+                            <h4 class="font-bold text-gray-900 mb-3">Categories</h4>
+                            <div class="space-y-3">
+                                {% for category in categories %}
+                                <label class="flex items-center gap-3">
+                                    <input type="checkbox" name="categories" value="{{ category.main_category_id }}" 
+                                           {% if category.main_category_id|stringformat:"i" in selected_categories %}checked{% endif %}
+                                           class="w-5 h-5 rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                    <span class="text-gray-700">{{ category.main_category_name }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
-                    <button type="submit" class="w-full bg-brand-900 text-white font-bold py-3.5 rounded-xl shadow-lg mt-8">Show Results</button>
+
+                    <button type="button" onclick="document.getElementById('mobile-filter-drawer').classList.add('hidden')" class="w-full bg-brand-900 text-white font-bold py-3.5 rounded-xl shadow-lg mt-8 hover:bg-brand-800 transition">
+                        Show Results
+                    </button>
                 </div>
             </div>
 
         </form>
     </div>
-
-    <footer class="bg-slate-50 pt-16 pb-8 border-t border-gray-200 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center pt-8 border-t border-gray-200">
-                <p class="text-sm text-gray-400">&copy; 2025 Happy Donates. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const menu = document.getElementById('mobile-menu');
-        menuBtn.addEventListener('click', () => menu.classList.toggle('hidden'));
-
-        const filterBtn = document.getElementById('mobile-filter-btn');
-        const filterDrawer = document.getElementById('mobile-filter-drawer');
-        const drawerContent = document.getElementById('drawer-content');
-        const closeFilterBtn = document.getElementById('close-filter-btn');
-        const backdrop = document.getElementById('close-filter-backdrop');
-
-        function openDrawer() { filterDrawer.classList.remove('hidden'); setTimeout(() => drawerContent.classList.remove('translate-x-full'), 10); document.body.classList.add('overflow-hidden'); }
-        function closeDrawer() { drawerContent.classList.add('translate-x-full'); setTimeout(() => filterDrawer.classList.add('hidden'), 300); document.body.classList.remove('overflow-hidden'); }
-
-        if(filterBtn) filterBtn.addEventListener('click', openDrawer);
-        if(closeFilterBtn) closeFilterBtn.addEventListener('click', closeDrawer);
-        if(backdrop) backdrop.addEventListener('click', closeDrawer);
-    </script>
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,301 @@
+{% extends 'userbase.html' %} 
+{% load static %}
+
+{% block title %}My Profile | Happy Donates{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+    /* Custom styles specific to the profile page */
+    .active-tab {
+        border-bottom: 2px solid #8B1E4C;
+        color: #8B1E4C;
+        font-weight: 600;
+    }
+    
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+
+    /* Animation Styles for the Modal */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes scaleUp {
+        from { opacity: 0; transform: scale(0.95) translateY(10px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+    .animate-scale-up {
+        animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="pt-20 w-full overflow-x-hidden">
+    
+    <div class="relative">
+        <div class="h-48 md:h-64 bg-gradient-to-r from-brand-900 to-pink-800 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full translate-x-1/3 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 left-0 w-40 h-40 bg-white opacity-5 rounded-full -translate-x-1/3 translate-y-1/2"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="flex flex-col md:flex-row items-end -mt-12 md:-mt-16 mb-8 gap-6">
+                
+                <div class="relative mx-auto md:mx-0">
+                    {% if user.image.profile_image %}
+                        <img src="{{ user.image.profile_image.url }}" alt="{{ user.username }}" class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-lg object-cover bg-white">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=random" alt="Profile" class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-lg object-cover bg-white">
+                    {% endif %}
+                    
+                    <a href="#" class="absolute bottom-2 right-2 bg-gray-100 hover:bg-gray-200 text-gray-600 p-2 rounded-full shadow-sm border border-white transition">
+                        <i class="fa-solid fa-camera text-sm"></i>
+                    </a>
+                </div>
+
+                <div class="flex-1 pb-2 w-full md:w-auto text-center md:text-left">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="font-serif text-3xl font-bold text-gray-900 flex items-center justify-center md:justify-start gap-2">
+                                {{ user.image.full_name|default:user.username|title }} 
+                                <i class="fa-solid fa-circle-check text-blue-500 text-lg" title="Verified User"></i>
+                            </h1>
+                            <p class="text-gray-500 text-sm mt-1">
+                                Member since {{ user.date_joined|date:"Y" }} • 
+                                {{ user.image.state.state_name|default:"Location not set" }}
+                            </p>
+                        </div>
+                        
+                        <div class="flex gap-3 justify-center md:justify-end">
+                            <a href="{% url 'edit_profile' %}" class="px-6 py-2.5 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition bg-white">
+                                Edit Profile
+                            </a>
+                            <a href="{% url 'donate_item' %}" class="px-6 py-2.5 bg-brand-900 text-white rounded-xl font-bold shadow-lg hover:bg-brand-800 transition flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Donate Item
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex border-b border-gray-200 overflow-x-auto no-scrollbar w-full">
+                <a href="#" class="px-6 py-4 text-sm font-medium active-tab whitespace-nowrap">My Listings ({{ posts.count|default:"0" }})</a>
+                <a href="#" class="px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap">Pending Requests</a>
+                <a href="#" class="px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap">My Donations</a>
+                <a href="#" class="px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap">Impact History</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="py-10 bg-slate-50 min-h-[50vh]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <div class="lg:col-span-4 space-y-6">
+                    
+                    <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+                        <h3 class="font-bold text-gray-900 mb-3">Contact Info</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed mb-4">
+                           Manage your personal information and contact details here.
+                        </p>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-100 space-y-3">
+                            <div class="flex items-center gap-3 text-sm text-gray-600">
+                                <i class="fa-solid fa-envelope text-gray-400 w-5 text-center"></i> 
+                                {{ user.email }}
+                            </div>
+                            <div class="flex items-center gap-3 text-sm text-gray-600">
+                                <i class="fa-solid fa-phone text-gray-400 w-5 text-center"></i> 
+                                {{ user.image.phone|default:"Phone not verified" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-brand-50 to-white rounded-2xl border border-brand-100 p-6 shadow-sm">
+                        <h3 class="font-bold text-brand-900 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-star text-yellow-500"></i> Impact Score
+                        </h3>
+                        <div class="flex items-end gap-2 mb-2">
+                            <span class="text-4xl font-bold text-gray-900">{{ posts.count }}</span>
+                            <span class="text-sm text-gray-500 mb-1.5">posts created</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                            <div class="bg-brand-500 h-2.5 rounded-full" style="width: 70%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500">Keep donating to increase your score!</p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-8">
+                    
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="font-bold text-xl text-gray-900">Active Listings</h2>
+                        <select class="bg-white border border-gray-200 text-sm rounded-lg px-3 py-2 outline-none focus:border-brand-500">
+                            <option>All Items</option>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        {% for post in posts %}
+                        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden group hover:shadow-md transition flex flex-col h-full">
+                            <div class="relative h-48">
+                                {% if post.images %}
+                                    <img src="{{ post.images.url }}" class="w-full h-full object-cover" alt="{{ post.title }}">
+                                {% else %}
+                                    <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
+                                        <i class="fa-regular fa-image text-4xl"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="absolute top-3 right-3">
+                                    {% if post.status == 'Active' %}
+                                        <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded border border-green-200 shadow-sm">Active</span>
+                                    {% else %}
+                                        <span class="bg-gray-100 text-gray-700 text-xs font-bold px-2 py-1 rounded border border-gray-200 shadow-sm">{{ post.status }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="p-4 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h3 class="font-bold text-gray-900 truncate pr-2">{{ post.title }}</h3>
+                                        <span class="text-xs text-gray-400 whitespace-nowrap">{{ post.create_at|timesince }} ago</span>
+                                    </div>
+                                    <div class="flex items-center gap-4 text-xs text-gray-500 mb-4">
+                                        <span><i class="fa-solid fa-box"></i> Qty: {{ post.quantity }}</span>
+                                        <span class="truncate"><i class="fa-solid fa-location-dot"></i> {{ post.location.district_name }}</span>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 mt-auto">
+                                    <a href="#" class="text-center py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition">Edit</a>
+                                    <a href="#" class="text-center py-2 text-sm font-bold text-brand-900 border border-brand-200 rounded-lg hover:bg-brand-50 transition">View</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="md:col-span-2 text-center py-8">
+                            <p class="text-gray-500">You haven't posted any items yet.</p>
+                        </div>
+                        {% endfor %}
+
+                        <a href="{% url 'donate_item' %}" class="md:col-span-2">
+                            <div class="border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center h-full min-h-[200px] bg-gray-50 hover:bg-white hover:border-brand-300 transition cursor-pointer group">
+                                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm mb-3 group-hover:scale-110 transition text-brand-600">
+                                    <i class="fa-solid fa-camera text-xl"></i>
+                                </div>
+                                <p class="font-bold text-gray-900">Donate Another Item</p>
+                                <p class="text-xs text-gray-500">Clear clutter, spread joy.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+<div id="statusModal" class="fixed inset-0 z-[100] flex items-center justify-center px-4 sm:px-6" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    
+    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0 animate-fade-in" onclick="closeModal()"></div>
+
+    <div class="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] transform transition-all scale-95 opacity-0 animate-scale-up sm:max-w-sm w-full overflow-hidden relative z-10">
+        
+        {% for message in messages %}
+        <div class="relative p-8 text-center">
+            
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-300 hover:text-gray-500 transition-colors">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-6 
+                {% if 'success' in message.tags %} bg-green-50 shadow-green-100
+                {% elif 'error' in message.tags %} bg-red-50 shadow-red-100
+                {% else %} bg-blue-50 shadow-blue-100 {% endif %} shadow-xl ring-8 ring-white">
+                
+                {% if 'success' in message.tags %}
+                    <i class="fa-solid fa-check text-4xl text-green-500 drop-shadow-sm"></i>
+                {% elif 'error' in message.tags %}
+                    <i class="fa-solid fa-triangle-exclamation text-3xl text-red-500 drop-shadow-sm"></i>
+                {% else %}
+                    <i class="fa-solid fa-bell text-3xl text-blue-500 drop-shadow-sm"></i>
+                {% endif %}
+            </div>
+
+            <h3 class="text-2xl font-serif font-bold text-gray-900 mb-2">
+                {% if 'success' in message.tags %} Awesome!
+                {% elif 'error' in message.tags %} Oops!
+                {% else %} Note {% endif %}
+            </h3>
+
+            <p class="text-gray-500 mb-8 leading-relaxed font-medium">
+                {{ message }}
+            </p>
+            
+            <button type="button" onclick="closeModal()" 
+                class="w-full inline-flex justify-center items-center py-3.5 px-6 border border-transparent rounded-2xl shadow-lg shadow-brand-900/20 text-base font-bold text-white bg-gradient-to-r from-brand-900 to-pink-800 hover:from-brand-800 hover:to-pink-700 transform hover:-translate-y-0.5 transition-all duration-200">
+                Continue
+            </button>
+        </div>
+
+        <div class="h-1.5 w-full bg-gray-100">
+            <div id="modalProgress" class="h-full bg-gradient-to-r from-brand-900 to-pink-600 w-full origin-left"></div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function closeModal() {
+        const modal = document.getElementById('statusModal');
+        if (modal) {
+            // Animate out
+            modal.querySelector('div[class*="bg-white"]').style.transform = 'scale(0.95) translateY(10px)';
+            modal.querySelector('div[class*="bg-white"]').style.opacity = '0';
+            modal.firstElementChild.style.opacity = '0'; // Fade backdrop
+            
+            setTimeout(() => {
+                modal.remove();
+            }, 300);
+        }
+    }
+
+    // Auto-close logic with progress bar animation
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('statusModal');
+        if (modal) {
+            const progressBar = document.getElementById('modalProgress');
+            
+            // Animate width from 100% to 0% over 5 seconds
+            progressBar.style.transition = 'width 5000ms linear';
+            
+            // Small delay to ensure transition triggers after render
+            setTimeout(() => {
+                progressBar.style.width = '0%';
+            }, 50);
+
+            // Close after 5 seconds
+            setTimeout(closeModal, 5000);
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

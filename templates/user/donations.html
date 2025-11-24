@@ -1,0 +1,103 @@
+{% extends 'userbase.html' %}
+{% load static %}
+
+{% block title %}Donation Requests | Happy Donates{% endblock %}
+
+{% block content %}
+<div class="pt-32 pb-8 bg-slate-50 min-h-screen relative overflow-x-hidden w-full">
+    
+    <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-brand-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center mb-12">
+        <h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">Make a Real Difference Today</h1>
+        <p class="text-gray-500 text-lg max-w-2xl mx-auto">Directly support verified needs. Your small contribution creates big smiles.</p>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <form id="filterForm" class="mb-12 w-full">
+            <input type="hidden" name="category" id="categoryInput" value="{{ selected_category }}"
+                   hx-get="{% url 'donation_list' %}"
+                   hx-target="#donation-grid"
+                   hx-include="#filterForm"
+                   hx-push-url="true"
+                   hx-trigger="change">
+
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                
+                <div class="w-full md:w-auto overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+                    <div class="flex flex-nowrap md:flex-wrap gap-3 min-w-max px-1">
+                        <button type="button" onclick="setCategory('')" 
+                           class="px-6 py-2.5 rounded-full text-sm font-medium transition hover:-translate-y-0.5 shadow-sm cursor-pointer whitespace-nowrap
+                           {% if not selected_category %}bg-brand-900 text-white shadow-brand-900/20{% else %}bg-white text-gray-600 border border-gray-200 hover:border-brand-200 hover:text-brand-700{% endif %}">
+                            All
+                        </button>
+                        
+                        {% for cat in categories %}
+                        <button type="button" onclick="setCategory('{{ cat.donation_category_name }}')" 
+                                class="px-6 py-2.5 rounded-full text-sm font-medium transition hover:-translate-y-0.5 shadow-sm cursor-pointer whitespace-nowrap
+                                {% if selected_category == cat.donation_category_name %}bg-brand-900 text-white shadow-brand-900/20{% else %}bg-white text-gray-600 border border-gray-200 hover:border-brand-200 hover:text-brand-700{% endif %}">
+                            {{ cat.donation_category_name }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <div class="relative flex-1 sm:w-64 w-full">
+                        <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400 text-sm"></i>
+                        <input type="text" name="q" value="{{ search_query }}" 
+                               placeholder="Search requests..." 
+                               class="w-full pl-10 pr-4 py-2.5 rounded-full border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition shadow-sm"
+                               hx-get="{% url 'donation_list' %}"
+                               hx-trigger="keyup changed delay:500ms"
+                               hx-target="#donation-grid"
+                               hx-include="#filterForm"
+                               hx-push-url="true">
+                    </div>
+                    
+                    <select name="sort" 
+                            class="w-full sm:w-auto px-4 py-2.5 rounded-full border border-gray-200 bg-white text-sm text-gray-600 focus:outline-none focus:border-brand-500 cursor-pointer shadow-sm appearance-none"
+                            hx-get="{% url 'donation_list' %}"
+                            hx-trigger="change"
+                            hx-target="#donation-grid"
+                            hx-include="#filterForm"
+                            hx-push-url="true">
+                        <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Recent</option>
+                        <option value="oldest" {% if current_sort == 'oldest' %}selected{% endif %}>Oldest</option>
+                        <option value="urgent" {% if current_sort == 'urgent' %}selected{% endif %}>Urgent Ending</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        <div class="htmx-indicator text-center py-4 w-full">
+            <i class="fa-solid fa-circle-notch fa-spin text-brand-600 text-2xl"></i>
+        </div>
+
+        <div id="donation-grid" class="w-full">
+            {% include 'partials/donation_list.html' %}
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function setCategory(categoryName) {
+        let input = document.getElementById('categoryInput');
+        if (input.value === categoryName) return;
+        
+        input.value = categoryName;
+        
+        // Restore Visual Styling Logic
+        document.querySelectorAll('button[onclick^="setCategory"]').forEach(btn => {
+            btn.className = "px-6 py-2.5 rounded-full text-sm font-medium transition hover:-translate-y-0.5 shadow-sm cursor-pointer whitespace-nowrap bg-white text-gray-600 border border-gray-200 hover:border-brand-200 hover:text-brand-700";
+            
+            if(btn.textContent.trim() === (categoryName || 'All')) {
+                btn.className = "px-6 py-2.5 rounded-full text-sm font-medium transition hover:-translate-y-0.5 shadow-sm cursor-pointer whitespace-nowrap bg-brand-900 text-white shadow-brand-900/20";
+            }
+        });
+
+        htmx.trigger(input, 'change');
+    }
+</script>
+{% endblock %}

@@ -68,45 +68,55 @@ def update_status(sender, instance, **kwargs):
 
 
 class UserDonationModel(models.Model):
-    """
-    Model representing donation requests made by users.
 
-    Attributes:
-        donation_id (AutoField): The primary key for the donation request.
-        user (ForeignKey): The user who made the donation request.
-        title (CharField): The title of the donation request.
-        description (TextField): The description of the donation request.
-        category (ForeignKey): The category of the donation request.
-        end_date (DateTimeField): The end date for the donation request.
-        location (ForeignKey): The location of the donation request.
-        address (CharField): The address of the donation request.
-        images (ImageField): The image(s) associated with the donation request.
-        contact_number (CharField): The contact number for the donation request.
-        comments (TextField): Any additional comments on the donation request.
-        create_at (DateTimeField): The creation time of the donation request.
-        status (CharField): The status of the donation request.
-
-    Meta:
-        db_table (str): The name of the database table for the model.
-    """
     donation_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='donations', null=True)
-    title = models.CharField(max_length=400, null=True)
-    description = models.TextField(null=True)
-    category = models.ForeignKey(DonationCategoryModel, on_delete=models.CASCADE, related_name='donations', null=True)
-    end_date = models.DateTimeField(null=True)
-    location = models.ForeignKey(DistrictsModel, on_delete=models.CASCADE, related_name='donations', null=True)
-    address = models.CharField(max_length=500, null=True)
-    donation_file = models.FileField(upload_to='files/', null=True, default=None)
-    hospital_name = models.CharField(max_length=500, null=True, default=None)
-    donation_user_name = models.CharField(max_length=500, null=True)
-    hospital_patient_id = models.CharField(max_length=500, null=True)
-    images = models.ImageField(upload_to='images/', null=True)
-    contact_number = models.CharField(max_length=100, null=True)
-    comments = models.TextField(max_length=500, null=True)
-    create_at = models.DateTimeField(auto_now_add=True, null=True)
-    status = models.CharField(max_length=100, default="Pending")
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='donations',
+        null=True, blank=True
+    )
+
+    title = models.CharField(max_length=400, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+
+    category = models.ForeignKey(
+        DonationCategoryModel, on_delete=models.CASCADE,
+        related_name='donations', null=True, blank=True
+    )
+
+    end_date = models.DateTimeField(null=True, blank=True)
+
+    location = models.ForeignKey(
+        DistrictsModel, on_delete=models.CASCADE,
+        related_name='donations', null=True, blank=True
+    )
+
+    address = models.CharField(max_length=500, null=True, blank=True)
+
+    donation_file = models.FileField(
+        upload_to='files/', null=True, blank=True, default=None
+    )
+
+    hospital_name = models.CharField(
+        max_length=500, null=True, blank=True, default=None
+    )
+
+    donation_user_name = models.CharField(max_length=500, null=True, blank=True)
+
+    hospital_patient_id = models.CharField(max_length=500, null=True, blank=True)
+
+    images = models.ImageField(upload_to='images/', null=True, blank=True)
+
+    contact_number = models.CharField(max_length=100, null=True, blank=True)
+
+    comments = models.TextField(max_length=500, null=True, blank=True)
+
+    create_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    status = models.CharField(max_length=100, default="Pending", blank=True)
+
     slug = models.SlugField(max_length=255, null=True, blank=True, unique=True)
+
     def save(self, *args, **kwargs):
         if not self.slug:
             base = slugify(self.title) if self.title else "donation"
@@ -136,6 +146,12 @@ class UserProfileModel(models.Model):
     full_name = models.CharField(max_length=200,null=True,blank=True)   
     state = models.ForeignKey(StateModel, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='image')
+    location = models.CharField(max_length=255, null=True, blank=True, help_text="e.g. Queens, New York, NY")
+    bio = models.TextField(max_length=500, null=True, blank=True)
+    
+   
+    notify_messages = models.BooleanField(default=True)
+    notify_donations = models.BooleanField(default=True)
 
     class Meta:
         db_table = "user_profile_table"

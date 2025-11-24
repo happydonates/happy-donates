@@ -47,7 +47,7 @@ def home(request):
         'post_data': post_data,
         'donation_data': donation_data,
     }
-    return render(request, 'admin_home_page.html', data)
+    return render(request, 'admin/admin_home_page.html', data)
 
 def admin_login(request):
     """
@@ -66,10 +66,10 @@ def admin_login(request):
                 login(request, user)
                 return redirect('/admin_home')
             else:
-                return render(request, 'admin_login.html', {'error': 'You do not have admin privileges.'})
+                return render(request, 'admin/admin_login.html', {'error': 'You do not have admin privileges.'})
         else:
-            return render(request, 'admin_login.html', {'error': 'Invalid username or password.'})
-    return render(request, 'admin_login.html')
+            return render(request, 'admin/admin_login.html', {'error': 'Invalid username or password.'})
+    return render(request, 'admin/admin_login.html')
 
 
 @login_required(login_url='/admin_login')
@@ -117,7 +117,7 @@ def admin_user(request):
 
         data_user['user_data'] = results
 
-    return render(request, "admin_user_page.html", data_user)
+    return render(request, "admin/admin_user_page.html", data_user)
 
 
 @login_required(login_url='/admin_login')
@@ -176,7 +176,7 @@ def admin_post(request):
         if countFetch.isdigit() and int(countFetch) > 0:
             results = results.order_by('-create_at')[:int(countFetch)]
         data_post['post_data'] = results
-    return render(request, "admin_post_page.html", data_post)
+    return render(request, "admin/admin_post_page.html", data_post)
 
 
 @login_required(login_url='/admin_login')
@@ -201,7 +201,7 @@ def admin_category(request):
         'subCategoryNonFood': SubCategoryModel.objects.annotate(count=Count('posts')).filter(main_category_id=2)
     }
 
-    return render(request, "admin_category_page.html", data_post)
+    return render(request, "admin/admin_category_page.html", data_post)
 
 
 @login_required(login_url='/admin_login')
@@ -220,13 +220,13 @@ def admin_add_category(request):
         data = SubCategoryModel.objects.filter(sub_category_name__iexact=sub_category_name,
                                                main_category_id=mainCategory)
         if data:
-            return render(request, 'admin_add_subcategory.html', {'status': "invalid"})
+            return render(request, 'admin/admin_add_subcategory.html', {'status': "invalid"})
         else:
             subCategory = SubCategoryModel(main_category_id=mainCategory, sub_category_name=sub_category_name)
             subCategory.save()
             return redirect('/admin_subcategory')
 
-    return render(request, 'admin_add_subcategory.html')
+    return render(request, 'admin/admin_add_subcategory.html')
 
 
 @login_required(login_url='/admin_login')
@@ -317,7 +317,7 @@ def admin_donation_request(request):
 
         data_donation_request['donations'] = results
 
-    return render(request, 'admin_donation_request.html', {'donation_request': data_donation_request})
+    return render(request, 'admin/admin_donation_request.html', {'donation_request': data_donation_request})
 
 
 @login_required(login_url='/admin_login')
@@ -338,7 +338,7 @@ def state_district_view(request):
     )
 
     context = {'states': states, 'districts': districts}
-    return render(request, 'admin_state_district.html', context)
+    return render(request, 'admin/admin_state_district.html', context)
 
 
 @login_required(login_url='/admin_login')
@@ -360,7 +360,7 @@ def user_profile(request, user_name):
         'user_donations': user_donations,
     }
 
-    return render(request, 'admin_user_profile.html', context)
+    return render(request, 'admin/admin_user_profile.html', context)
 
 
 @login_required(login_url='/admin_login')
@@ -412,7 +412,7 @@ def post_detail_view(request, post_id):
         'user_posts': user_posts,
     }
 
-    return render(request, 'admin_post_details.html', context)
+    return render(request, 'admin/admin_post_details.html', context)
 
 @login_required(login_url='/admin_login')
 def donation_detail_view(request, donation_id):
@@ -432,7 +432,7 @@ def donation_detail_view(request, donation_id):
         'user': user,
         'other_donations': other_donations,
     }
-    return render(request, 'admin_donation_details.html', context)
+    return render(request, 'admin/admin_donation_details.html', context)
 
 
 def update_donation_status(request, action, donation_id):
@@ -544,7 +544,7 @@ def poster_list(request):
         'posters': posters,
         'poster_count': posters.count()
     }
-    return render(request, 'admin_poster_list.html', context)
+    return render(request, 'admin/admin_poster_list.html', context)
 
 
 @csrf_exempt

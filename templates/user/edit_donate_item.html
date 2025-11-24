@@ -1,0 +1,271 @@
+{% extends 'userbase.html' %}
+{% load static %}
+
+{% block title %}Edit Item | Happy Donates{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Custom Radio for Category */
+    .cat-radio:checked + div {
+        background-color: #fdf2f8;
+        border-color: #8B1E4C;
+        color: #8B1E4C;
+    }
+    /* Custom Radio for Status */
+    .status-radio:checked + div {
+        border-color: #8B1E4C;
+        background-color: #fdf2f8;
+    }
+    .status-radio:checked + div .status-icon {
+        color: #8B1E4C;
+    }
+    /* Hide File Input */
+    input[type="file"] {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pt-24 md:pt-32 pb-16 w-full">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+                <a href="{% url 'user_home' %}" class="text-xs font-bold text-gray-400 uppercase tracking-wider hover:text-brand-900 flex items-center gap-2 mb-2 transition">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <h1 class="font-serif text-3xl md:text-4xl font-bold text-gray-900">Edit Donation</h1>
+            </div>
+            <a href="#" class="flex items-center gap-2 text-brand-600 font-bold text-sm hover:underline">
+                View Live Listing <i class="fa-solid fa-external-link-alt"></i>
+            </a>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            {% csrf_token %}
+
+            <div class="lg:col-span-2 space-y-6">
+                
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h2 class="font-bold text-gray-900 mb-4">Item Status</h2>
+                    <div class="grid grid-cols-3 gap-3">
+                        <label class="cursor-pointer relative group">
+                            <input type="radio" name="status" value="Active" class="hidden status-radio" 
+                                   {% if post.status == 'Active' %}checked{% endif %}>
+                            <div class="border-2 border-gray-200 rounded-xl p-3 text-center hover:border-brand-100 transition h-full flex flex-col justify-center">
+                                <i class="fa-solid fa-circle-check text-green-500 text-xl mb-1 block status-icon transition"></i>
+                                <span class="text-xs font-bold">Active</span>
+                            </div>
+                        </label>
+                        
+                        <label class="cursor-pointer relative group">
+                            <input type="radio" name="status" value="Inactive" class="hidden status-radio"
+                                   {% if post.status == 'Inactive' %}checked{% endif %}>
+                            <div class="border-2 border-gray-200 rounded-xl p-3 text-center hover:border-brand-100 transition h-full flex flex-col justify-center">
+                                <i class="fa-solid fa-clock text-yellow-500 text-xl mb-1 block status-icon transition"></i>
+                                <span class="text-xs font-bold">Pending</span>
+                            </div>
+                        </label>
+
+                        <label class="cursor-pointer relative group">
+                            <input type="radio" name="status" value="Gifted" class="hidden status-radio"
+                                   {% if post.status == 'Gifted' %}checked{% endif %}>
+                            <div class="border-2 border-gray-200 rounded-xl p-3 text-center hover:border-brand-100 transition h-full flex flex-col justify-center">
+                                <i class="fa-solid fa-gift text-gray-400 text-xl mb-1 block status-icon transition"></i>
+                                <span class="text-xs font-bold">Gifted</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h2 class="font-bold text-gray-900 mb-4">Manage Photos</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        
+                        {% if post.images %}
+                        <div class="relative group aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                            <img src="{{ post.images.url }}" class="w-full h-full object-cover">
+                            <div class="absolute bottom-0 w-full bg-black/50 text-white text-[10px] text-center py-1">Current</div>
+                        </div>
+                        {% endif %}
+
+                        <label class="border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:border-brand-400 hover:text-brand-600 hover:bg-brand-50 transition cursor-pointer aspect-square">
+                            <input type="file" name="images" accept="image/*" onchange="previewNewImage(this)">
+                            <i class="fa-solid fa-camera text-xl mb-1"></i>
+                            <span class="text-xs font-bold">Change Photo</span>
+                        </label>
+
+                        <div id="newImagePreview" class="hidden relative group aspect-square rounded-xl overflow-hidden bg-gray-100 border border-brand-200">
+                            <img id="newImageTarget" src="" class="w-full h-full object-cover">
+                            <div class="absolute bottom-0 w-full bg-brand-900 text-white text-[10px] text-center py-1">New</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h2 class="font-bold text-gray-900 mb-4">Item Details</h2>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Item Title</label>
+                            <input type="text" name="title" value="{{ post.title }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition text-gray-900 font-medium" oninput="updatePreview('title', this.value)">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Category</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                {% for cat in subcategories %}
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="sub_category" value="{{ cat.sub_category_id }}" 
+                                           class="hidden cat-radio" 
+                                           {% if post.sub_category.sub_category_id == cat.sub_category_id %}checked{% endif %}>
+                                    
+                                    <div class="border border-gray-200 rounded-xl p-3 text-center hover:border-brand-200 transition h-full flex flex-col items-center justify-center">
+                                        {% if 'Furniture' in cat.sub_category_name %}
+                                            <i class="fa-solid fa-couch text-xl mb-1 block"></i>
+                                        {% elif 'Electronics' in cat.sub_category_name %}
+                                            <i class="fa-solid fa-plug text-xl mb-1 block"></i>
+                                        {% elif 'Clothing' in cat.sub_category_name %}
+                                            <i class="fa-solid fa-shirt text-xl mb-1 block"></i>
+                                        {% elif 'Sport' in cat.sub_category_name %}
+                                            <i class="fa-solid fa-basketball text-xl mb-1 block"></i>
+                                        {% else %}
+                                            <i class="fa-solid fa-box-open text-xl mb-1 block"></i>
+                                        {% endif %}
+                                        
+                                        <span class="text-xs font-medium">{{ cat.sub_category_name }}</span>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Description</label>
+                            <textarea name="description" rows="5" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition text-gray-900">{{ post.description }}</textarea>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">District</label>
+                                <div class="relative">
+                                    <select name="location" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition bg-white text-gray-900 appearance-none" onchange="updatePreview('location', this.options[this.selectedIndex].text)">
+                                        {% for district in districts %}
+                                            <option value="{{ district.district_id }}" 
+                                                    {% if post.location.district_id == district.district_id %}selected{% endif %}>
+                                                {{ district.district_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                                        <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Contact</label>
+                                <input type="text" name="contact_number" value="{{ post.contact_number }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition text-gray-900">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Exact Address</label>
+                            <input type="text" name="address" value="{{ post.address }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition text-gray-900">
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button type="submit" class="flex-1 bg-brand-900 hover:bg-brand-800 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-brand-900/20 transition transform hover:-translate-y-0.5">
+                        Save Changes
+                    </button>
+                    <a href="{% url 'user_home' %}" class="text-center px-8 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold py-4 rounded-xl transition">
+                        Cancel
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="hidden lg:block lg:col-span-1 relative">
+                <div class="sticky top-28 space-y-8">
+                    
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase mb-4 tracking-wider">Live Preview</h3>
+                        <div class="bg-white rounded-2xl p-3 shadow-lg border border-gray-200 pointer-events-none opacity-90 scale-95 origin-top">
+                            <div class="relative h-56 rounded-xl overflow-hidden bg-gray-100">
+                                {% if post.images %}
+                                    <img src="{{ post.images.url }}" class="w-full h-full object-cover">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                        <i class="fa-solid fa-image text-4xl"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">
+                                    {{ post.sub_category.sub_category_name }}
+                                </div>
+                            </div>
+                            <div class="pt-4 px-2 pb-2">
+                                <h3 id="preview-title" class="font-bold text-lg text-gray-900 truncate">{{ post.title }}</h3>
+                                <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-location-dot text-brand-400"></i> 
+                                    <span id="preview-location">{{ post.location.district_name }}</span>
+                                </p>
+                                <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-900">
+                                            {{ post.user.username|make_list|first|upper }}
+                                        </div>
+                                        <span class="text-xs text-gray-500">{{ post.user.username }}</span>
+                                    </div>
+                                    <span class="text-xs text-gray-400">Just now</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border border-red-100 bg-red-50 rounded-2xl p-6">
+                        <h3 class="font-bold text-red-700 mb-2">Danger Zone</h3>
+                        <p class="text-xs text-red-600/80 mb-4 leading-relaxed">
+                            Deleting this item is permanent and cannot be undone. All chat history related to this item will be closed.
+                        </p>
+                        <button type="button" class="w-full bg-white border border-red-200 text-red-600 font-bold py-2.5 rounded-lg hover:bg-red-600 hover:text-white transition text-sm">
+                            Delete Listing
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    // Live Preview Text Updates
+    function updatePreview(field, val) {
+        const el = document.getElementById('preview-' + field);
+        if (el) {
+            el.textContent = val ? val : (field === 'title' ? 'Item Title' : field);
+        }
+    }
+
+    // New Image Preview
+    function previewNewImage(input) {
+        const previewDiv = document.getElementById('newImagePreview');
+        const targetImg = document.getElementById('newImageTarget');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                targetImg.src = e.target.result;
+                previewDiv.classList.remove('hidden');
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+{% endblock %}

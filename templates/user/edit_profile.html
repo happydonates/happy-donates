@@ -1,0 +1,254 @@
+{% extends 'userbase.html' %}
+
+{% block title %}Edit Profile | Happy Donates{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Toggle Switch Styling */
+    .toggle-checkbox:checked {
+        right: 0;
+        border-color: #8B1E4C;
+    }
+    .toggle-checkbox:checked + .toggle-label {
+        background-color: #8B1E4C;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pt-24 md:pt-32 pb-16 w-full">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="p-4 rounded-xl {% if message.tags == 'success' %}bg-green-50 text-green-700 border border-green-200{% else %}bg-red-50 text-red-700{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="mb-8">
+            <a href="#" class="text-xs font-bold text-gray-400 uppercase tracking-wider hover:text-brand-900 flex items-center gap-2 mb-2">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <h1 class="font-serif text-3xl md:text-4xl font-bold text-gray-900">Profile Settings</h1>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            {% csrf_token %}
+
+            <div class="lg:col-span-2 space-y-6">
+                
+                <div class="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm">
+                    <h2 class="font-bold text-gray-900 text-lg mb-6 pb-4 border-b border-gray-100">Public Profile</h2>
+                    
+                    <div class="flex items-center gap-6 mb-8">
+                        <div class="relative group">
+                            <img id="input-image-preview" 
+                                 src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}https://ui-avatars.com/api/?name={{ user.first_name|default:user.username }}+{{ user.last_name|default:'' }}&background=random{% endif %}" 
+                                 class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md group-hover:opacity-80 transition">
+                            
+                            <label class="absolute inset-0 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition bg-black/30 rounded-full text-white font-bold text-xs">
+                                <i class="fa-solid fa-camera mr-1"></i> Change
+                                <input type="file" name="profile_image" id="input-image" class="hidden" accept="image/*">
+                            </label>
+                        </div>
+                        <div>
+                            <label for="input-image" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-50 transition cursor-pointer">
+                                Upload New
+                            </label>
+                            <p class="text-xs text-gray-400 mt-2">JPG or PNG. Max 2MB.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">First Name</label>
+                            <input type="text" id="input-fname" name="first_name" value="{{ user.first_name }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition text-gray-900 bg-gray-50 focus:bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Last Name</label>
+                            <input type="text" id="input-lname" name="last_name" value="{{ user.last_name }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition text-gray-900 bg-gray-50 focus:bg-white">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Location</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="input-location" name="location" value="{{ profile.location|default:'' }}" placeholder="e.g. Queens, New York" class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition text-gray-900 bg-gray-50 focus:bg-white">
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Bio</label>
+                            <textarea id="input-bio" name="bio" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition text-gray-900 bg-gray-50 focus:bg-white">{{ profile.bio|default:'' }}</textarea>
+                            <p class="text-xs text-gray-400 mt-1 text-right">Brief description for your public profile</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm">
+                    <h2 class="font-bold text-gray-900 text-lg mb-6 pb-4 border-b border-gray-100">Contact & Security</h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Email Address</label>
+                            <div class="flex gap-2">
+                                <input type="email" name="email" value="{{ user.email }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition text-gray-900 bg-gray-50 focus:bg-white">
+                                <span class="flex items-center px-3 text-green-600 text-xs font-bold bg-green-50 rounded-lg border border-green-100 whitespace-nowrap"><i class="fa-solid fa-check mr-1"></i> Verified</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phone Number</label>
+                            <input type="tel" name="phone" value="{{ profile.phone|default:'' }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition text-gray-900 bg-gray-50 focus:bg-white">
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100">
+                            <button type="button" class="text-brand-900 font-bold text-sm hover:underline flex items-center gap-2">
+                                <i class="fa-solid fa-lock"></i> Change Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm">
+                    <h2 class="font-bold text-gray-900 text-lg mb-6 pb-4 border-b border-gray-100">Notifications</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-bold text-gray-900 text-sm">New Messages</p>
+                                <p class="text-xs text-gray-500">Get notified when someone messages you.</p>
+                            </div>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="notify_messages" id="toggle1" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" {% if profile.notify_messages %}checked{% endif %}/>
+                                <label for="toggle1" class="toggle-label block overflow-hidden h-5 rounded-full bg-brand-900 cursor-pointer"></label>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-bold text-gray-900 text-sm">Donation Updates</p>
+                                <p class="text-xs text-gray-500">Status changes on items you requested.</p>
+                            </div>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="notify_donations" id="toggle2" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" {% if profile.notify_donations %}checked{% endif %}/>
+                                <label for="toggle2" class="toggle-label block overflow-hidden h-5 rounded-full bg-brand-900 cursor-pointer"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <button type="submit" class="bg-brand-900 hover:bg-brand-800 text-white font-bold text-lg py-4 px-8 rounded-xl shadow-lg shadow-brand-900/20 transition transform hover:-translate-y-0.5">
+                        Save Changes
+                    </button>
+                    <button type="reset" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-lg py-4 px-8 rounded-xl transition">
+                        Cancel
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="hidden lg:block lg:col-span-1 relative">
+                <div class="sticky top-28">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Public Preview</h3>
+                        <span class="text-xs text-brand-600 font-medium bg-brand-50 px-2 py-1 rounded">What others see</span>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 text-center relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-brand-100 to-white -z-0"></div>
+                        
+                        <div class="relative z-10">
+                            <img id="preview-image" 
+                                 src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}https://ui-avatars.com/api/?name={{ user.first_name|default:user.username }}+{{ user.last_name|default:'' }}&background=random{% endif %}" 
+                                 class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md mx-auto mb-3">
+                            
+                            <h2 class="font-serif text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
+                                <span id="preview-name">{{ user.first_name }} {{ user.last_name }}</span> 
+                                <i class="fa-solid fa-circle-check text-blue-500 text-sm"></i>
+                            </h2>
+                            <p id="preview-location" class="text-xs text-gray-500 mb-4">{{ profile.location|default:'Location not set' }}</p>
+                            
+                            <div class="flex justify-center gap-4 mb-6">
+                                <div class="text-center px-4 border-r border-gray-100">
+                                    <span class="block font-bold text-brand-900 text-lg">12</span>
+                                    <span class="text-[10px] text-gray-400 uppercase font-bold">Gifted</span>
+                                </div>
+                                <div class="text-center px-4">
+                                    <span class="block font-bold text-brand-900 text-lg">5.0</span>
+                                    <span class="text-[10px] text-gray-400 uppercase font-bold">Rating</span>
+                                </div>
+                            </div>
+
+                            <div class="text-left bg-gray-50 rounded-xl p-4 mb-6">
+                                <p id="preview-bio" class="text-xs text-gray-600 italic break-words">"{{ profile.bio|default:'No bio yet.' }}"</p>
+                            </div>
+
+                            <button type="button" class="w-full border border-gray-200 text-gray-400 font-bold py-2 rounded-lg text-sm cursor-not-allowed bg-gray-50">Message User</button>
+                        </div>
+                    </div>
+
+        </form> 
+        <div class="mt-8 text-center">
+                        <form action="{% url 'delete_account' %}" method="POST" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                            {% csrf_token %}
+                            <button type="submit" class="text-xs text-red-400 hover:text-red-600 font-medium underline decoration-red-200 bg-transparent border-0 cursor-pointer">
+                                Deactivate or Delete Account
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div> </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const fNameInput = document.getElementById('input-fname');
+        const lNameInput = document.getElementById('input-lname');
+        const locInput = document.getElementById('input-location');
+        const bioInput = document.getElementById('input-bio');
+        const imgInput = document.getElementById('input-image');
+
+        const previewName = document.getElementById('preview-name');
+        const previewLoc = document.getElementById('preview-location');
+        const previewBio = document.getElementById('preview-bio');
+        const previewImg = document.getElementById('preview-image');
+        const inputImgPreview = document.getElementById('input-image-preview');
+
+        // Function to update Name
+        function updateName() {
+            previewName.textContent = `${fNameInput.value} ${lNameInput.value}`;
+        }
+
+        // Event Listeners for Text
+        fNameInput.addEventListener('input', updateName);
+        lNameInput.addEventListener('input', updateName);
+        
+        locInput.addEventListener('input', function() {
+            previewLoc.textContent = this.value || 'Location not set';
+        });
+
+        bioInput.addEventListener('input', function() {
+            previewBio.textContent = `"${this.value || 'No bio yet.'}"`;
+        });
+
+        // Image Preview Logic
+        imgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Update both the small preview in input and large preview on right
+                    previewImg.src = e.target.result;
+                    inputImgPreview.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+{% endblock %}

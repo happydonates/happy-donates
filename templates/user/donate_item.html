@@ -1,0 +1,234 @@
+{% extends 'userbase.html' %}
+
+{% block title %}Donate Item | Happy Donates{% endblock %}
+
+{% block content %}
+
+<style>
+    .cat-radio:checked + div {
+        background-color: #fdf2f8;
+        border-color: #8B1E4C;
+        color: #8B1E4C;
+    }
+    /* Hide the default file input */
+    input[type="file"] {
+        display: none;
+    }
+</style>
+
+<div class="pt-24 md:pt-32 pb-16 w-full">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="mb-8">
+            <h1 class="font-serif text-3xl md:text-4xl font-bold text-gray-900">Post a Donation</h1>
+            <p class="text-gray-500 mt-2">Give your item a second life. It only takes a minute.</p>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mt-4 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            {% csrf_token %}
+            
+            <div class="lg:col-span-2 space-y-6">
+                
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h2 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <span class="bg-brand-100 text-brand-900 w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span> Photos
+                    </h2>
+                    
+                    <label class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-brand-400 hover:bg-brand-50 transition cursor-pointer group block">
+                        <input type="file" name="images" id="imageInput" accept="image/*" onchange="previewImage(this)">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white transition">
+                            <i class="fa-solid fa-camera text-2xl text-gray-400 group-hover:text-brand-600"></i>
+                        </div>
+                        <p class="text-sm font-bold text-gray-700" id="uploadText">Click to upload photo</p>
+                        <p class="text-xs text-gray-400 mt-1">Supported: JPG, PNG</p>
+                    </label>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h2 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <span class="bg-brand-100 text-brand-900 w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span> Details
+                    </h2>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Item Title</label>
+                            <input type="text" name="title" required placeholder="e.g. Kitchen Mixer" 
+                                   class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition" 
+                                   oninput="updatePreview('title', this.value)">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Category</label>
+                            <div class="relative">
+                                <select name="sub_category" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition bg-white appearance-none" onchange="updatePreview('category', this.options[this.selectedIndex].text)">
+                                    <option value="" disabled selected>Select Category</option>
+                                    {% for sub in subcategories %}
+                                        <option value="{{ sub.sub_category_id }}">{{ sub.sub_category_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                                    <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Condition</label>
+                            <div class="relative">
+                                <select name="condition" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition bg-white appearance-none">
+                                    <option value="Like New">Like New</option>
+                                    <option value="Good">Good</option>
+                                    <option value="Fair">Fair</option>
+                                    <option value="For Parts">For Parts</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                                    <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Description</label>
+                            <textarea name="description" rows="4" placeholder="Tell people about your item..." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h2 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <span class="bg-brand-100 text-brand-900 w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span> Location & Contact
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="relative">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">District</label>
+                            <div class="relative">
+                                <select name="location" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition bg-white appearance-none" onchange="updatePreview('location', this.options[this.selectedIndex].text)">
+                                    <option value="" disabled selected>Select District</option>
+                                    {% for district in districts %}
+                                        <option value="{{ district.district_id }}">{{ district.district_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                                    <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Contact Number</label>
+                            <input type="text" name="contact_number" placeholder="+91 98765..." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pickup Address</label>
+                            <input type="text" name="address" placeholder="House Name, Street, Landmark..." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition">
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex items-start gap-3 bg-yellow-50 p-3 rounded-lg">
+                        <i class="fa-regular fa-lightbulb text-yellow-600 mt-0.5"></i>
+                        <p class="text-xs text-yellow-800 leading-relaxed">
+                            For safety, your exact address will only be shared with the person you select to receive the item.
+                        </p>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-brand-900 hover:bg-brand-800 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-brand-900/20 transition transform hover:-translate-y-0.5">
+                    Post Donation
+                </button>
+
+            </div>
+
+            <div class="hidden lg:block lg:col-span-1 relative">
+                <div class="sticky top-28">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase mb-4 tracking-wider">Preview</h3>
+                    
+                    <div class="bg-white rounded-2xl p-3 shadow-lg border border-gray-200 pointer-events-none opacity-90 scale-95 origin-top">
+                        <div class="relative h-56 rounded-xl overflow-hidden bg-gray-100">
+                            <div class="w-full h-full flex items-center justify-center bg-gray-50 text-gray-300" id="previewImageContainer">
+                                <i class="fa-solid fa-image text-4xl"></i>
+                            </div>
+                            <img id="previewImgElement" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                            
+                            <div id="preview-category" class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-brand-900">Category</div>
+                        </div>
+                        <div class="pt-4 px-2 pb-2">
+                            <h3 id="preview-title" class="font-bold text-lg text-gray-900 truncate">Item Title</h3>
+                            <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
+                                <i class="fa-solid fa-location-dot text-brand-400"></i> <span id="preview-location">Location</span>
+                            </p>
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-900">
+                                        {{ request.user.username|make_list|first|upper }}
+                                    </div>
+                                    <span class="text-xs text-gray-500">{{ request.user.username }}</span>
+                                </div>
+                                <span class="text-xs text-gray-400">Just now</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <h4 class="font-bold text-gray-900 mb-3">Tips for a fast pickup</h4>
+                        <ul class="space-y-3 text-sm text-gray-600">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-green-500 mt-1"></i>
+                                <span>Take clear photos in daylight.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-green-500 mt-1"></i>
+                                <span>Be honest about the condition.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-green-500 mt-1"></i>
+                                <span>Mention if it's heavy to carry.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </form>
+        </div>
+</div>
+
+<script>
+    // Live Preview Logic
+    function updatePreview(field, val) {
+        const el = document.getElementById('preview-' + field);
+        if (el) {
+            el.textContent = val ? val : (field === 'title' ? 'Item Title' : field);
+        }
+    }
+
+    // Image Preview Logic
+    function previewImage(input) {
+        const container = document.getElementById('previewImageContainer');
+        const img = document.getElementById('previewImgElement');
+        const uploadText = document.getElementById('uploadText');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                img.classList.remove('hidden');
+                container.classList.add('hidden');
+                uploadText.textContent = input.files[0].name; // Show filename
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+{% endblock %}
